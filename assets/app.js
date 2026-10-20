@@ -230,7 +230,7 @@
     if (!entries[0].isIntersecting) return;
     qrIo.disconnect();
     const s = document.createElement("script");
-    s.src = "assets/vendor/qrcode.js";
+    s.src = "https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.min.js";
     s.onload = () => {
       const url = new URL(R.menuPdf, location.href).href;
       const qr = qrcode(0, "M");
