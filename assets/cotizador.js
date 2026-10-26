@@ -183,6 +183,7 @@
   }
 
   function pintarCot() {
+    document.dispatchEvent(new CustomEvent("cotizacion:cambio", { detail: { items: items(), total: total() } }));
     panel.hidden = cot.size === 0;
     slot.querySelector("#cotCount").textContent = `${items()} ${items() === 1 ? "producto" : "productos"}`;
     slot.querySelector("#cotTotal").textContent = clp(total());
@@ -282,6 +283,13 @@
       abrirDetalle(detalle.hidden);
     }
   });
+
+  // API para la vitrina de productos (assets/ferreteria.js)
+  window.Cotizador = {
+    agregar: (id, cant) => { yo(`Agregar ${cant} × ${productos[id].nombre}`); agregar(id, cant); },
+    preguntar: (q) => { yo(q); responder(q); },
+    stockLibre: (id) => productos[id].stock - (cot.get(id) || 0),
+  };
 
   bot(
     `Hola, ¿qué producto necesitas cotizar? Escribe, por ejemplo, <em>«3 sacos cemento melón»</em> o <em>«fierro 10 mm»</em>, o elige una categoría:${chipsCategorias()}`

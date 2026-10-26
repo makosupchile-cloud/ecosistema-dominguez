@@ -33,6 +33,46 @@ window.SITE = {
       "Consulta stock y cotiza al instante por WhatsApp, con precios de lista actualizados. Descuentos y condiciones especiales se confirman directo con nuestro equipo.",
     imagen: U("photo-1504148455328-c376907d081c", 1400),
     chatEtiqueta: "Cotiza con nuestro asistente",
+    // Portada tipo tienda (página /ferreteria)
+    slides: [
+      {
+        eyebrow: "Obra gruesa",
+        titulo: "Todo para tu construcción",
+        texto: "Cemento, fierro, áridos y planchas con stock al día.",
+        categoria: "Construcción",
+        imagen: U("photo-1504307651254-35680f356dfd", 1800),
+      },
+      {
+        eyebrow: "Terminaciones",
+        titulo: "Pinta tu casa este fin de semana",
+        texto: "Látex, esmaltes, rodillos y brochas listos para retirar.",
+        categoria: "Pintura",
+        imagen: U("photo-1562259949-e8e7689d7828", 1800),
+      },
+      {
+        eyebrow: "Taller",
+        titulo: "Herramientas para cada trabajo",
+        texto: "Manuales y eléctricas, discos, guantes y más.",
+        categoria: "Herramientas",
+        imagen: U("photo-1426927308491-6380b6a9936f", 1800),
+      },
+    ],
+    // Foto por categoría del catálogo (assets/catalogo.js)
+    categoriasImg: {
+      "Construcción": U("photo-1504307651254-35680f356dfd", 500),
+      "Madera": U("photo-1589939705384-5185137a7f0f", 500),
+      "Pintura": U("photo-1562259949-e8e7689d7828", 500),
+      "Fijaciones": U("photo-1581783898377-1c85bf937427", 500),
+      "Electricidad y gasfitería": U("photo-1621905251189-08b45d6a269e", 500),
+      "Herramientas": U("photo-1426927308491-6380b6a9936f", 500),
+    },
+    imagenVisita: U("photo-1586864387967-d02ef85d93e8", 1200),
+    beneficios: [
+      { t: "Cotización al instante", d: "Precios de lista con IVA" },
+      { t: "Stock actualizado", d: "Sabes qué hay antes de venir" },
+      { t: "Retiro en tienda", d: "Uribe 406, Cañete" },
+      { t: "Confirmas por WhatsApp", d: "Te responde nuestro equipo" },
+    ],
     whatsapp: "56900000000",
     mensaje: "Hola, quiero cotizar en Ferretería La Italiana.",
   },

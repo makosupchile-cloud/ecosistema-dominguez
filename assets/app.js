@@ -66,42 +66,7 @@
       </div>`;
   }
 
-  /* ---------- 1. Ferretería ---------- */
-  const F = S.ferreteria;
-  const logo = F.logo
-    ? `<img src="${esc(F.logo)}" alt="Ferretería ${esc(F.nombre)}" class="wordmark__img">`
-    : `<div class="wordmark" role="img" aria-label="Ferretería ${esc(F.nombre)}">
-         <span class="wordmark__rule"></span>
-         <span class="wordmark__small">${esc(F.subtitulo)}</span>
-         <span class="wordmark__name">${esc(F.nombre)}</span>
-         <span class="wordmark__small">Est. ${esc(S.ciudad)}</span>
-         <span class="wordmark__rule"></span>
-       </div>`;
-  if ($("#ferreteria")) $("#ferreteria").innerHTML = `
-    <div class="container split">
-      <div class="split__text">
-        <p class="eyebrow reveal"><span class="num">01</span>${esc(F.eyebrow)}</p>
-        <div class="reveal">${logo}</div>
-        <p class="body reveal">${esc(F.texto)}</p>
-        <p class="address reveal">${esc(F.direccion)}</p>
-        <div class="actions reveal">${btnWa(F.whatsapp, F.mensaje, "Cotizar por WhatsApp")}</div>
-      </div>
-      <div class="split__aside reveal">
-        <figure class="frame frame--tall">${img(F.imagen, "Herramientas de ferretería", "", "(min-width: 960px) 45vw, 100vw")}</figure>
-        <div class="chat-slot" id="chat-widget-slot" data-widget="ferreteria-bot">
-          <div class="chat-slot__head">
-            <span class="dot"></span>
-            <span class="chat-slot__label">${esc(F.chatEtiqueta)}</span>
-          </div>
-          <div class="chat-slot__body">
-            <div class="bubble bubble--in">Hola, ¿qué producto necesitas cotizar hoy?</div>
-            <div class="bubble bubble--out">Precio y stock de…</div>
-            <div class="bubble bubble--typing"><i></i><i></i><i></i></div>
-          </div>
-          <p class="chat-slot__note">Espacio reservado para el asistente de cotización.</p>
-        </div>
-      </div>
-    </div>`;
+  /* ---------- 1. Ferretería: la renderiza assets/ferreteria.js ---------- */
 
   /* ---------- 2. Centro Vacacional ---------- */
   const V = S.vacacional;
