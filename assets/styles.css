@@ -308,3 +308,22 @@ img.is-broken { opacity: 0; }
   .hero__img, .frame img, .gallery__item img { transition: none; transform: none; }
   .hero__scroll span { animation: none; }
 }
+
+/* ---------- Hub de unidades y enlaces cruzados (páginas por ruta) ---------- */
+.hub { background: var(--black); color: var(--white); }
+.hub .eyebrow, .crosslinks .eyebrow { color: rgba(255,255,255,0.55); }
+.units { display: grid; grid-template-columns: 1fr; gap: 24px; margin-top: clamp(40px, 6vw, 72px); }
+@media (min-width: 720px) { .units { grid-template-columns: repeat(2, 1fr); } }
+@media (min-width: 1100px) { .units { grid-template-columns: repeat(4, 1fr); } .units--3 { grid-template-columns: repeat(3, 1fr); } }
+.unit { display: flex; flex-direction: column; gap: 8px; color: var(--white); }
+.unit__img { margin: 0 0 12px; aspect-ratio: 4 / 5; overflow: hidden; background: var(--graphite); }
+.unit__img img { width: 100%; height: 100%; object-fit: cover; transition: transform 1.2s var(--ease); }
+.unit:hover .unit__img img { transform: scale(1.05); }
+.unit__num { font: italic 400 15px/1 var(--serif); color: var(--gold); }
+.unit__name { font: 400 28px/1.1 var(--serif); }
+.unit__text { font-size: 14px; color: var(--ash); }
+.unit__go { font-size: 11px; letter-spacing: 0.22em; text-transform: uppercase; color: var(--gold); margin-top: 6px; }
+.crosslinks { background: var(--black); color: var(--white); padding: clamp(72px, 10vw, 128px) 0; border-top: 1px solid var(--line-dark); }
+.crosslinks .units { margin-top: 28px; }
+.crosslinks__back { margin-top: 48px; font-size: 11px; letter-spacing: 0.22em; text-transform: uppercase; }
+.crosslinks__back a:hover { color: var(--gold); }

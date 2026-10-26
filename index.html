@@ -7,40 +7,36 @@
   <meta name="description" content="Ferretería, centro vacacional, restaurante y hotelería en Cañete. Propuesta conceptual.">
   <meta name="robots" content="noindex">
   <meta name="theme-color" content="#0e0e0e">
-  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+  <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="preconnect" href="https://images.unsplash.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="assets/styles.css">
+  <link rel="stylesheet" href="/assets/styles.css">
 </head>
-<body>
+<body data-page="inicio">
   <header class="nav" id="nav">
-    <a href="#inicio" class="nav__brand">Domínguez<span>Cañete</span></a>
+    <a href="/" class="nav__brand">Domínguez<span>Cañete</span></a>
     <button class="nav__toggle" id="navToggle" aria-label="Abrir menú" aria-expanded="false" aria-controls="navLinks">
       <span></span><span></span>
     </button>
     <nav class="nav__links" id="navLinks" aria-label="Secciones">
-      <a href="#ferreteria">Ferretería</a>
-      <a href="#vacacional">Centro Vacacional</a>
-      <a href="#restaurante">Restaurante</a>
-      <a href="#hoteleria" class="nav__cta">Hotelería</a>
+      <a href="/ferreteria">Ferretería</a>
+      <a href="/centro-vacacional">Centro Vacacional</a>
+      <a href="/restaurante">Restaurante</a>
+      <a href="/hoteleria" class="nav__cta">Hotelería</a>
     </nav>
   </header>
 
   <main id="app">
     <section class="hero" id="inicio"></section>
-    <section class="section ferreteria" id="ferreteria"></section>
-    <section class="vacacional" id="vacacional"></section>
-    <section class="section restaurante" id="restaurante"></section>
-    <section class="section hoteleria" id="hoteleria"></section>
+    <section class="section hub" id="hub"></section>
+    <section class="crosslinks" id="crosslinks"></section>
   </main>
 
   <footer class="footer" id="footer"></footer>
 
-  <script src="assets/config.js"></script>
-  <script src="assets/catalogo.js"></script>
-  <script src="assets/app.js" defer></script>
-  <script src="assets/cotizador.js" defer></script>
+  <script src="/assets/config.js"></script>
+  <script src="/assets/app.js" defer></script>
 </body>
 </html>

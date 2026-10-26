@@ -62,7 +62,7 @@ window.SITE = {
     texto:
       "Colación diaria, platos de la casa y buena carta de tragos. Consulta el menú del día por WhatsApp.",
     imagen: U("photo-1414235077428-338989a2e8c0", 2000),
-    menuPdf: "assets/menu-placeholder.pdf",
+    menuPdf: "/assets/menu-placeholder.pdf",
     secciones: [
       {
         titulo: "Colación del día",
