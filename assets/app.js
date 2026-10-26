@@ -14,9 +14,25 @@
   const btnWa = (num, msg, label, variant = "gold") =>
     `<a class="btn btn--${variant}" href="${wa(num, msg)}" target="_blank" rel="noopener">${waIcon}<span>${esc(label)}</span></a>`;
 
+  const PAGE = document.body.dataset.page || "inicio";
+  const UNIDADES = [
+    { id: "ferreteria", ruta: "/ferreteria", n: "01", nombre: "Ferretería", img: S.ferreteria.imagen, texto: "Cotiza stock y precios al instante." },
+    { id: "vacacional", ruta: "/centro-vacacional", n: "02", nombre: "Centro Vacacional", img: S.vacacional.poster, texto: "Cabañas, piscina y naturaleza." },
+    { id: "restaurante", ruta: "/restaurante", n: "03", nombre: "Restaurante", img: S.restaurante.imagen, texto: "Colación diaria, platos y tragos." },
+    { id: "hoteleria", ruta: "/hoteleria", n: "04", nombre: "Hotelería", img: S.hoteleria.piezas[0].imagen, texto: "Piezas para tu estadía." },
+  ];
+  const tarjetas = (lista) => lista
+    .map((u) => `<a class="unit reveal" href="${u.ruta}">
+        <figure class="unit__img">${img(u.img, u.nombre, "", "(min-width: 960px) 25vw, 100vw")}</figure>
+        <span class="unit__num">${u.n}</span>
+        <span class="unit__name">${esc(u.nombre)}</span>
+        <span class="unit__text">${esc(u.texto)}</span>
+        <span class="unit__go">Entrar →</span>
+      </a>`).join("");
+
   /* ---------- Hero ---------- */
   const H = S.hero;
-  $("#inicio").innerHTML = `
+  if ($("#inicio")) $("#inicio").innerHTML = `
     <div class="hero__media">${img(H.imagen, "", "hero__img", "100vw", true)}</div>
     <div class="hero__veil"></div>
     <div class="hero__content">
@@ -24,13 +40,31 @@
       <h1 class="display reveal">${H.titulo}</h1>
       <p class="lead reveal">${esc(H.bajada)}</p>
       <ul class="hero__index reveal">
-        <li><a href="#ferreteria"><span>01</span>Ferretería</a></li>
-        <li><a href="#vacacional"><span>02</span>Centro Vacacional</a></li>
-        <li><a href="#restaurante"><span>03</span>Restaurante</a></li>
-        <li><a href="#hoteleria"><span>04</span>Hotelería</a></li>
+        ${UNIDADES.map((u) => `<li><a href="${u.ruta}"><span>${u.n}</span>${esc(u.nombre)}</a></li>`).join("")}
       </ul>
     </div>
-    <a href="#ferreteria" class="hero__scroll" aria-label="Bajar"><span></span></a>`;
+    <a href="#hub" class="hero__scroll" aria-label="Bajar"><span></span></a>`;
+
+  /* ---------- Hub de unidades (solo inicio) ---------- */
+  if ($("#hub")) $("#hub").innerHTML = `
+    <div class="container">
+      <header class="section__head">
+        <p class="eyebrow reveal">El ecosistema</p>
+        <h2 class="display display--md reveal">Elige tu experiencia</h2>
+      </header>
+      <div class="units">${tarjetas(UNIDADES)}</div>
+    </div>`;
+
+  /* ---------- Otras unidades (páginas internas) ---------- */
+  if ($("#crosslinks")) {
+    if (PAGE === "inicio") $("#crosslinks").remove();
+    else $("#crosslinks").innerHTML = `
+      <div class="container">
+        <p class="eyebrow reveal">Sigue explorando el ecosistema</p>
+        <div class="units units--3">${tarjetas(UNIDADES.filter((u) => u.id !== PAGE))}</div>
+        <p class="crosslinks__back reveal"><a href="/">← Volver al inicio</a></p>
+      </div>`;
+  }
 
   /* ---------- 1. Ferretería ---------- */
   const F = S.ferreteria;
@@ -43,7 +77,7 @@
          <span class="wordmark__small">Est. ${esc(S.ciudad)}</span>
          <span class="wordmark__rule"></span>
        </div>`;
-  $("#ferreteria").innerHTML = `
+  if ($("#ferreteria")) $("#ferreteria").innerHTML = `
     <div class="container split">
       <div class="split__text">
         <p class="eyebrow reveal"><span class="num">01</span>${esc(F.eyebrow)}</p>
@@ -74,7 +108,7 @@
   const media = V.video
     ? `<video class="vac__video" autoplay muted loop playsinline preload="none" poster="${esc(V.poster)}"><source src="${esc(V.video)}" type="video/mp4"></video>`
     : `${img(V.poster, "", "vac__video")}<span class="video-tag">Espacio para video de fondo</span>`;
-  $("#vacacional").innerHTML = `
+  if ($("#vacacional")) $("#vacacional").innerHTML = `
     <div class="vac__hero">
       <div class="vac__media">${media}</div>
       <div class="hero__veil"></div>
@@ -100,7 +134,7 @@
 
   /* ---------- 3. Restaurante ---------- */
   const R = S.restaurante;
-  $("#restaurante").innerHTML = `
+  if ($("#restaurante")) $("#restaurante").innerHTML = `
     <div class="container">
       <header class="section__head">
         <p class="eyebrow reveal"><span class="num">03</span>${esc(R.eyebrow)}</p>
@@ -141,7 +175,7 @@
 
   /* ---------- 4. Hotelería ---------- */
   const HO = S.hoteleria;
-  $("#hoteleria").innerHTML = `
+  if ($("#hoteleria")) $("#hoteleria").innerHTML = `
     <div class="container">
       <header class="section__head">
         <p class="eyebrow reveal"><span class="num">04</span>${esc(HO.eyebrow)}</p>
@@ -175,14 +209,16 @@
   /* ---------- Footer ---------- */
   $("#footer").innerHTML = `
     <div class="container footer__inner">
-      <a href="#inicio" class="nav__brand">${esc(S.marca)}<span>${esc(S.ciudad)}</span></a>
+      <a href="/" class="nav__brand">${esc(S.marca)}<span>${esc(S.ciudad)}</span></a>
       <p>${esc(S.pie)}</p>
     </div>`;
 
   /* ---------- Navegación ---------- */
   const nav = $("#nav");
   const toggle = $("#navToggle");
-  const onScroll = () => nav.classList.toggle("is-solid", window.scrollY > 40);
+  // En páginas sin portada oscura la barra va siempre sólida
+  const siempreSolida = PAGE !== "inicio" && PAGE !== "vacacional";
+  const onScroll = () => nav.classList.toggle("is-solid", siempreSolida || window.scrollY > 40);
   onScroll();
   window.addEventListener("scroll", onScroll, { passive: true });
   toggle.addEventListener("click", () => {
@@ -198,17 +234,11 @@
     })
   );
 
-  // Sección activa en la navegación
-  const links = [...document.querySelectorAll(".nav__links a")];
-  const spy = new IntersectionObserver(
-    (entries) =>
-      entries.forEach((e) => {
-        if (e.isIntersecting)
-          links.forEach((l) => l.classList.toggle("is-active", l.getAttribute("href") === "#" + e.target.id));
-      }),
-    { rootMargin: "-45% 0px -50% 0px" }
+  // Página activa en la navegación
+  const actual = UNIDADES.find((u) => u.id === PAGE);
+  document.querySelectorAll(".nav__links a").forEach((l) =>
+    l.classList.toggle("is-active", !!actual && l.getAttribute("href") === actual.ruta)
   );
-  ["ferreteria", "vacacional", "restaurante", "hoteleria"].forEach((id) => spy.observe(document.getElementById(id)));
 
   /* ---------- Animaciones de entrada ---------- */
   const io = new IntersectionObserver(
@@ -226,6 +256,7 @@
 
   /* ---------- QR del menú (carga diferida) ---------- */
   const qrBox = $("#menuQr");
+  if (!qrBox) return;
   const qrIo = new IntersectionObserver((entries) => {
     if (!entries[0].isIntersecting) return;
     qrIo.disconnect();
