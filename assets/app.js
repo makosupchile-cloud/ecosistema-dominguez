@@ -138,38 +138,7 @@
       </div>
     </div>`;
 
-  /* ---------- 4. Hotelería ---------- */
-  const HO = S.hoteleria;
-  if ($("#hoteleria")) $("#hoteleria").innerHTML = `
-    <div class="container">
-      <header class="section__head">
-        <p class="eyebrow reveal"><span class="num">04</span>${esc(HO.eyebrow)}</p>
-        <h2 class="display display--md reveal">${esc(HO.titulo)}</h2>
-        <p class="lead reveal">${esc(HO.texto)}</p>
-      </header>
-      <div class="rooms">
-        ${HO.piezas
-          .map(
-            (p) => `<article class="room reveal">
-              <figure class="frame frame--room">${img(p.imagen, "Pieza " + p.tipo, "", "(min-width: 960px) 45vw, 100vw")}</figure>
-              <div class="room__body">
-                <div class="room__top">
-                  <h3 class="room__title">${esc(p.tipo)}</h3>
-                  <span class="room__cap">${esc(p.capacidad)}</span>
-                </div>
-                <ul class="room__features">${p.caracteristicas.map((c) => `<li>${esc(c)}</li>`).join("")}</ul>
-                <div class="room__foot">
-                  <p class="room__price"><small>Desde</small>${esc(p.precio)} <small>${esc(HO.moneda)} / noche</small></p>
-                  ${btnWa(HO.whatsapp, `${HO.mensaje} Tipo: ${p.tipo}.`, "Reservar")}
-                </div>
-              </div>
-            </article>`
-          )
-          .join("")}
-      </div>
-      <p class="fineprint reveal">${esc(HO.notaPrecio)}</p>
-      <div class="actions actions--center reveal">${btnWa(HO.whatsapp, HO.mensaje, "Reservar por WhatsApp")}</div>
-    </div>`;
+  /* ---------- 4. Hotelería: la renderiza assets/hoteleria.js ---------- */
 
   /* ---------- Footer ---------- */
   $("#footer").innerHTML = `
@@ -182,7 +151,7 @@
   const nav = $("#nav");
   const toggle = $("#navToggle");
   // En páginas sin portada oscura la barra va siempre sólida
-  const siempreSolida = PAGE !== "inicio" && PAGE !== "vacacional";
+  const siempreSolida = !["inicio", "vacacional", "hoteleria"].includes(PAGE);
   const onScroll = () => nav.classList.toggle("is-solid", siempreSolida || window.scrollY > 40);
   onScroll();
   window.addEventListener("scroll", onScroll, { passive: true });
