@@ -16,7 +16,7 @@
 
   const PAGE = document.body.dataset.page || "inicio";
   const UNIDADES = [
-    { id: "ferreteria", ruta: "/ferreteria", n: "01", nombre: "Ferretería", img: S.ferreteria.imagen, texto: "Cotiza stock y precios al instante." },
+    { id: "ferreteria", ruta: "/ferreteria", n: "01", nombre: "Ferretería", img: S.ferreteria.imagenVisita || S.ferreteria.imagen, texto: "Cotiza stock y precios al instante." },
     { id: "vacacional", ruta: "/centro-vacacional", n: "02", nombre: "Centro Vacacional", img: S.vacacional.poster, texto: "Cabañas, piscina y naturaleza." },
     { id: "restaurante", ruta: "/restaurante", n: "03", nombre: "Restaurante", img: S.restaurante.imagen, texto: "Colación diaria, platos y tragos." },
     { id: "hoteleria", ruta: "/hoteleria", n: "04", nombre: "Hotelería", img: S.hoteleria.piezas[0].imagen, texto: "Piezas para tu estadía." },
@@ -97,46 +97,8 @@
       </div>
     </div>`;
 
-  /* ---------- 3. Restaurante ---------- */
+  /* ---------- 3. Restaurante: lo renderiza assets/restaurante.js ---------- */
   const R = S.restaurante;
-  if ($("#restaurante")) $("#restaurante").innerHTML = `
-    <div class="container">
-      <header class="section__head">
-        <p class="eyebrow reveal"><span class="num">03</span>${esc(R.eyebrow)}</p>
-        <h2 class="display display--md reveal">${esc(R.titulo)}</h2>
-        <p class="lead reveal">${esc(R.texto)}</p>
-      </header>
-      <figure class="frame frame--wide reveal">${img(R.imagen, "Mesa servida en el restaurante", "", "100vw")}</figure>
-      <div class="menu">
-        ${R.secciones
-          .map(
-            (s) => `<article class="menu__col reveal">
-              <figure class="frame frame--sq">${img(s.imagen, s.titulo, "", "(min-width: 960px) 30vw, 100vw")}</figure>
-              <h3 class="menu__title">${esc(s.titulo)}</h3>
-              <p class="menu__note">${esc(s.nota)}</p>
-              <ul class="menu__list">
-                ${s.items
-                  .map(
-                    (it) => `<li><div><strong>${esc(it.nombre)}</strong><span>${esc(it.detalle)}</span></div><em>${esc(it.precio)}</em></li>`
-                  )
-                  .join("")}
-              </ul>
-            </article>`
-          )
-          .join("")}
-      </div>
-      <div class="menu-cta reveal">
-        <div class="qr" id="menuQr" aria-label="Código QR del menú"></div>
-        <div class="menu-cta__text">
-          <p class="eyebrow">Carta completa</p>
-          <p class="body">Escanea el código o ábrela aquí mismo.</p>
-          <div class="actions">
-            <a class="btn btn--line" href="${esc(R.menuPdf)}" target="_blank" rel="noopener">Ver menú (PDF)</a>
-            ${btnWa(R.whatsapp, R.mensaje, "Menú del día por WhatsApp")}
-          </div>
-        </div>
-      </div>
-    </div>`;
 
   /* ---------- 4. Hotelería: la renderiza assets/hoteleria.js ---------- */
 
