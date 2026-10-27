@@ -146,9 +146,24 @@ window.SITE = {
     texto: "Piezas disponibles para tu estadía. Revisa disponibilidad y reserva por WhatsApp.",
     moneda: "CLP",
     notaPrecio: "Precios referenciales por noche. Sujetos a disponibilidad y temporada.",
+    // Portada y secciones de la página /hoteleria (assets/hoteleria.js)
+    hero: U("photo-1522771739844-6a9f6d5f14af", 2000),
+    bajada: "Piezas cómodas en el centro de la provincia de Arauco. Elige tus fechas y te confirmamos disponibilidad por WhatsApp.",
+    // Dirección del hotel: vacío = el mapa apunta a Cañete
+    direccion: "",
+    servicios: ["Baño privado", "Wi-Fi", "Ropa de cama y toallas", "Restaurante del ecosistema", "Atención por WhatsApp", "Centro de Cañete"],
+    faq: [
+      { p: "¿Cómo reservo?", r: "Elige tus fechas y la cantidad de huéspedes, y presiona «Consultar disponibilidad». Se abre WhatsApp con tu solicitud lista y nuestro equipo te confirma la pieza y el valor final." },
+      { p: "¿Los precios son finales?", r: "Son precios referenciales por noche. El valor final depende de la temporada y la disponibilidad, y te lo confirmamos antes de reservar." },
+      { p: "¿Cuál es el horario de llegada y salida?", r: "Te lo confirmamos junto con tu reserva. Si necesitas llegar antes o salir más tarde, coméntalo en tu mensaje." },
+      { p: "¿Puedo reservar para un grupo o familia?", r: "Sí. La pieza para cuatro personas está pensada para familias, y para grupos más grandes podemos combinar piezas. Indícalo al consultar." },
+      { p: "¿Puedo comer en el hotel?", r: "El hotel es parte del Ecosistema Domínguez: tienes el restaurante con colación diaria, platos de la casa y tragos." },
+    ],
     piezas: [
       {
         tipo: "Simple",
+        max: 1,
+        descripcion: "Pieza individual, tranquila y funcional, ideal para viajes de trabajo.",
         imagen: U("photo-1631049307264-da0ec9d70304", 1000),
         capacidad: "1 persona",
         caracteristicas: ["Cama de 1,5 plazas", "Baño privado", "Wi-Fi", "Escritorio"],
@@ -156,6 +171,8 @@ window.SITE = {
       },
       {
         tipo: "Doble",
+        max: 2,
+        descripcion: "Dos camas individuales para compartir con un colega, amigo o familiar.",
         imagen: U("photo-1590490360182-c33d57733427", 1000),
         capacidad: "2 personas",
         caracteristicas: ["Dos camas individuales", "Baño privado", "Wi-Fi", "TV"],
@@ -163,6 +180,8 @@ window.SITE = {
       },
       {
         tipo: "Matrimonial",
+        max: 2,
+        descripcion: "Cama de dos plazas y ropa de cama premium para una estadía en pareja.",
         imagen: U("photo-1611892440504-42a792e24d32", 1000),
         capacidad: "2 personas",
         caracteristicas: ["Cama de 2 plazas", "Baño privado", "Wi-Fi", "Ropa de cama premium"],
@@ -170,6 +189,8 @@ window.SITE = {
       },
       {
         tipo: "Cuatro personas",
+        max: 4,
+        descripcion: "Espacio amplio con cama de dos plazas y dos individuales, pensado para familias.",
         imagen: U("photo-1618773928121-c32242e63f39", 1000),
         capacidad: "4 personas",
         caracteristicas: ["Cama de 2 plazas + 2 individuales", "Baño privado", "Wi-Fi", "Amplio espacio"],
