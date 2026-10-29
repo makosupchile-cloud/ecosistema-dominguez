@@ -790,3 +790,28 @@ img.is-broken { opacity: 0; }
 .resto__layout > * { min-width: 0; }
 .rpanel .qty { background: #1c1915; color: #fff; }
 @media (max-width: 559px) { .resto__carro { display: none; } .resto__bar-in { flex-wrap: nowrap; } .resto__hora { flex: 1; min-width: 0; } .resto__hora select { max-width: none; width: 100%; } }
+
+/* ---------- Portada (inicio): texto sobre negro sólido, foto en su propio panel ---------- */
+.hero--split { display: grid; grid-template-columns: minmax(0, 1fr); align-items: stretch; padding-top: var(--nav-h); background: var(--black); color: var(--white); min-height: 100vh; min-height: 100svh; }
+.hero--split .hero__media { position: relative; inset: auto; order: -1; height: 44vh; height: 44svh; min-height: 260px; }
+.hero--split .hero__media::after { content: ""; position: absolute; inset: auto 0 0 0; height: 3px; background: var(--gold); }
+.hero--split .hero__panel { display: flex; align-items: center; }
+.hero--split .hero__content { padding: 40px var(--gutter) 56px; margin: 0; max-width: none; }
+.hero--split .display { font-size: clamp(40px, 11vw, 60px); line-height: 1.04; }
+.hero--split .lead { margin-top: 22px; opacity: 0.85; }
+.hero--split .actions { margin-top: 32px; }
+.hero--split .btn { padding: 0 22px; letter-spacing: 0.16em; }
+.hero--split .btn--line:hover { background: var(--white); color: var(--black); }
+.hero__verbs { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0; margin-top: clamp(36px, 5vw, 56px); border-top: 1px solid var(--line-dark); }
+.hero__verbs a { display: flex; flex-direction: column; gap: 6px; height: 100%; padding: 18px 14px 0 0; transition: color 0.4s; }
+.hero__verbs li + li a { padding-left: 14px; border-left: 1px solid var(--line-dark); }
+.hero__verbs b { font: italic 400 clamp(20px, 5vw, 26px)/1 var(--serif); color: var(--gold); }
+.hero__verbs span { font-size: 12px; line-height: 1.45; color: rgba(255,255,255,0.7); }
+.hero__verbs a:hover b { color: var(--white); }
+@media (min-width: 900px) {
+  .hero--split { grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); }
+  .hero--split .hero__media { order: 2; height: auto; min-height: 0; }
+  .hero--split .hero__media::after { inset: 0 auto 0 0; width: 3px; height: auto; }
+  .hero--split .hero__content { padding: 56px clamp(32px, 4.5vw, 72px) 64px; max-width: 640px; margin-left: auto; }
+  .hero--split .display { font-size: clamp(44px, 4.3vw, 66px); }
+}

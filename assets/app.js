@@ -33,17 +33,23 @@
   /* ---------- Hero ---------- */
   const H = S.hero;
   if ($("#inicio")) $("#inicio").innerHTML = `
-    <div class="hero__media">${img(H.imagen, "", "hero__img", "100vw", true)}</div>
-    <div class="hero__veil"></div>
-    <div class="hero__content">
-      <p class="eyebrow reveal">${esc(H.eyebrow)}</p>
-      <h1 class="display reveal">${H.titulo}</h1>
-      <p class="lead reveal">${esc(H.bajada)}</p>
-      <ul class="hero__index reveal">
-        ${UNIDADES.map((u) => `<li><a href="${u.ruta}"><span>${u.n}</span>${esc(u.nombre)}</a></li>`).join("")}
-      </ul>
+    <div class="hero__panel">
+      <div class="hero__content">
+        <p class="eyebrow reveal">${esc(H.eyebrow)}</p>
+        <h1 class="display reveal">${H.titulo}</h1>
+        <p class="lead reveal">${esc(H.bajada)}</p>
+        <div class="actions reveal">
+          <a class="btn btn--gold" href="/hoteleria"><span>Reservar estadía</span></a>
+          <a class="btn btn--line" href="#hub"><span>Ver experiencias</span></a>
+        </div>
+        <ul class="hero__verbs reveal">
+          <li><a href="/ferreteria"><b>Cotiza</b><span>materiales y stock</span></a></li>
+          <li><a href="/restaurante"><b>Pide</b><span>colación y platos</span></a></li>
+          <li><a href="/hoteleria"><b>Reserva</b><span>cabañas y piezas</span></a></li>
+        </ul>
+      </div>
     </div>
-    <a href="#hub" class="hero__scroll" aria-label="Bajar"><span></span></a>`;
+    <div class="hero__media">${img(H.imagen, "Hotel y piscina iluminados al atardecer", "hero__img", "(min-width: 900px) 58vw, 100vw", true)}</div>`;
 
   /* ---------- Hub de unidades (solo inicio) ---------- */
   if ($("#hub")) $("#hub").innerHTML = `
@@ -113,7 +119,7 @@
   const nav = $("#nav");
   const toggle = $("#navToggle");
   // En páginas sin portada oscura la barra va siempre sólida
-  const siempreSolida = !["inicio", "vacacional", "hoteleria"].includes(PAGE);
+  const siempreSolida = !["vacacional", "hoteleria"].includes(PAGE);
   const onScroll = () => nav.classList.toggle("is-solid", siempreSolida || window.scrollY > 40);
   onScroll();
   window.addEventListener("scroll", onScroll, { passive: true });
