@@ -63,7 +63,7 @@
 
   /* ---------- Otras unidades (páginas internas) ---------- */
   if ($("#crosslinks")) {
-    if (PAGE === "inicio") $("#crosslinks").remove();
+    if (PAGE === "inicio" || PAGE === "hoteleria") $("#crosslinks").remove(); // hotelería ya trae su propio bloque «Todo el ecosistema a minutos»
     else $("#crosslinks").innerHTML = `
       <div class="container">
         <p class="eyebrow reveal">Sigue explorando el ecosistema</p>
