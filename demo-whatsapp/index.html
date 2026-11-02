@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="es-CL">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Simulación · Ferretería La Italiana</title>
+  <meta name="description" content="Simulación de cómo se vería la cotización de Ferretería La Italiana en WhatsApp. Propuesta conceptual.">
+  <meta name="robots" content="noindex">
+  <meta name="theme-color" content="#0b6b5d">
+  <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/assets/demo-whatsapp.css?v=20261102">
+</head>
+<body>
+  <div class="wa" id="wa">
+    <div class="wa__banner" role="note">Simulación demo · datos de prueba · no está conectada a WhatsApp real</div>
+
+    <header class="wa__head">
+      <a class="wa__back" href="/ferreteria" aria-label="Volver a la ferretería">‹</a>
+      <span class="wa__avatar" aria-hidden="true">LI</span>
+      <span class="wa__who">
+        <strong id="waNombre">Ferretería La Italiana</strong>
+        <small id="waEstado">en línea</small>
+      </span>
+      <button class="wa__reset" id="waReset" type="button" aria-label="Reiniciar conversación" title="Reiniciar">↺</button>
+    </header>
+
+    <main class="wa__chat" id="waChat" role="log" aria-live="polite"></main>
+
+    <div class="wa__quick" id="waQuick" aria-label="Sugerencias">
+      <button type="button" class="wa__play" id="waPlay">▶ Ver ejemplo</button>
+      <button type="button" data-q="Necesito cemento">Necesito cemento</button>
+      <button type="button" data-q="¿Tienen pintura?">¿Tienen pintura?</button>
+      <button type="button" data-q="¿Hacen despacho?">¿Hacen despacho?</button>
+    </div>
+
+    <form class="wa__form" id="waForm" autocomplete="off">
+      <label class="sr-only" for="waInput">Escribe un mensaje</label>
+      <input id="waInput" type="text" placeholder="Escribe un mensaje" enterkeyhint="send">
+      <button type="submit" aria-label="Enviar">➤</button>
+    </form>
+  </div>
+
+  <script src="/assets/config.js?v=20261102"></script>
+  <script src="/assets/catalogo.js?v=20261102"></script>
+  <script src="/assets/demo-whatsapp.js?v=20261102" defer></script>
+</body>
+</html>
