@@ -23,7 +23,8 @@
       .replace(/\s+/g, " ")
       .trim();
   const fecha = (iso) => iso.split("-").reverse().join("-");
-  const wa = (msg) => `https://wa.me/${F.whatsapp}?text=${encodeURIComponent(msg)}`;
+  // Demo: todos los botones de WhatsApp abren la simulación con la cotización actual.
+  const wa = () => "/demo-whatsapp";
 
   const productos = CAT.productos.map((p, i) => ({ ...p, id: i, texto: norm(p.nombre + " " + p.cat) }));
   const categorias = [...new Set(CAT.productos.map((p) => p.cat))];
@@ -75,6 +76,25 @@
 
   /* ---------- Estado de la cotización ---------- */
   const cot = new Map(); // id -> cantidad
+  /* Cotización compartida entre /ferreteria y /demo-whatsapp (mismo navegador). */
+  const CLAVE = "ld-cotizacion-demo";
+  function cargarCot(cot, productos) {
+    try {
+      const raw = JSON.parse(localStorage.getItem(CLAVE) || "[]");
+      cot.clear();
+      (Array.isArray(raw) ? raw : []).forEach(([id, c]) => {
+        const p = productos[id];
+        if (p && p.stock > 0 && c > 0) cot.set(id, Math.min(Math.floor(c), p.stock));
+      });
+    } catch (_) {}
+  }
+  function guardarCot(cot) {
+    try {
+      if (cot.size) localStorage.setItem(CLAVE, JSON.stringify([...cot]));
+      else localStorage.removeItem(CLAVE);
+    } catch (_) {}
+  }
+  cargarCot(cot, productos);
   const total = () => [...cot].reduce((s, [id, c]) => s + productos[id].precio * c, 0);
   const items = () => [...cot].reduce((s, [, c]) => s + c, 0);
 
@@ -183,6 +203,7 @@
   }
 
   function pintarCot() {
+    guardarCot(cot);
     document.dispatchEvent(new CustomEvent("cotizacion:cambio", { detail: { items: items(), total: total() } }));
     panel.hidden = cot.size === 0;
     slot.querySelector("#cotCount").textContent = `${items()} ${items() === 1 ? "producto" : "productos"}`;
@@ -290,6 +311,9 @@
     preguntar: (q) => { yo(q); responder(q); },
     stockLibre: (id) => productos[id].stock - (cot.get(id) || 0),
   };
+
+  if (cot.size) pintarCot();
+  window.addEventListener("pageshow", (e) => { if (e.persisted) location.reload(); });
 
   bot(
     `Hola, ¿qué producto necesitas cotizar? Escribe, por ejemplo, <em>«3 sacos cemento melón»</em> o <em>«fierro 10 mm»</em>, o elige una categoría:${chipsCategorias()}`
