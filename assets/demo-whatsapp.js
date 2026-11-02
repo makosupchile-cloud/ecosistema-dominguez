@@ -163,9 +163,14 @@
       })
       .join("")}</ul>`;
   }
-  const lineasCot = () =>
+  const lineasCot = (conQuitar) =>
     `<ul class="lines">${[...cot]
-      .map(([id, c]) => `<li><span>${c} × ${esc(productos[id].nombre)}</span><span>${clp(productos[id].precio * c)}</span></li>`)
+      .map(
+        ([id, c]) =>
+          `<li><span>${c} × ${esc(productos[id].nombre)}</span><span>${clp(productos[id].precio * c)}${
+            conQuitar ? `<button type="button" class="lines__del" data-quitar="${id}" aria-label="Quitar ${esc(productos[id].nombre)}">✕</button>` : ""
+          }</span></li>`
+      )
       .join("")}</ul>
      <div class="lines__total"><span>Total · IVA incl.</span><span>${clp(total())}</span></div>`;
 
@@ -198,8 +203,8 @@
   function verCotizacion() {
     if (!cot.size) return bot("Tu cotización está vacía por ahora. Escribe un producto para empezar.");
     bot(
-      `Esta es tu cotización (${cot.size} ${cot.size === 1 ? "producto" : "productos"}):${lineasCot()}` +
-        `<span class="msg__note">Precios de lista con IVA incluido. Descuentos y condiciones especiales se confirman con nuestro equipo.</span>` +
+      `Esta es tu cotización (${cot.size} ${cot.size === 1 ? "producto" : "productos"}):${lineasCot(true)}` +
+        `<span class="msg__note">Precios de lista con IVA incluido. Toca ✕ o escribe «quita el cemento» para sacar un producto.</span>` +
         qr(["enviar", "Enviar a la tienda"], ["seguir", "Seguir agregando"], ["vaciar", "Vaciar cotización"])
     );
   }
@@ -231,6 +236,35 @@
     );
   }
 
+  function quitar(id, cant) {
+    const p = productos[id];
+    const ya = cot.get(id) || 0;
+    if (!ya) return;
+    if (cant && cant < ya) {
+      cot.set(id, ya - cant);
+      return bot(`Listo, saqué ${cant} × <strong>${esc(p.nombre)}</strong>. Quedan ${ya - cant}.${cot.size ? lineasCot(true) : ""}`);
+    }
+    cot.delete(id);
+    bot(
+      `Listo, quité <strong>${esc(p.nombre)}</strong> de tu cotización.` +
+        (cot.size ? `${lineasCot(true)}${qr(["enviar", "Enviar a la tienda"], ["seguir", "Seguir agregando"])}` : " Quedó vacía; escribe un producto para empezar.")
+    );
+  }
+  function quitarPorTexto(q) {
+    if (!cot.size) return bot("Tu cotización está vacía, no hay nada que quitar.");
+    const sin = q.replace(/\b(quita|quitar|quitame|quítame|elimina|eliminar|saca|sacar|sácame|borra|borrar|remueve|remover|el|la|los|las|del|de|un|una|unos|unas|por favor|porfa)\b/gi, " ");
+    const { cantidad, tokens } = parse(sin);
+    if (/\b(todo|todos|todas|cotizacion|carrito|pedido)\b/.test(norm(sin)) && !tokens.some((k) => [...cot.keys()].some((id) => coincide(productos[id].texto, k))))
+      return vaciar();
+    const pts = [...cot.keys()]
+      .map((id) => [id, tokens.filter((k) => coincide(productos[id].texto, k)).length])
+      .filter(([, n]) => n > 0)
+      .sort((a, b) => b[1] - a[1]);
+    if (!pts.length || (pts.length > 1 && pts[0][1] === pts[1][1]))
+      return bot(`¿Cuál quieres quitar? Toca ✕ en el producto:${lineasCot(true)}`);
+    quitar(pts[0][0], cantidad && /\d/.test(sin) ? cantidad : 0);
+  }
+
   function vaciar() {
     cot.clear();
     bot("Vacié tu cotización. ¿Qué producto buscas?");
@@ -257,6 +291,7 @@
     if (/\b(direccion|donde|ubicacion|ubicados|local|horario|horarios)\b/.test(t))
       return bot(`Estamos en <strong>${esc(F.direccion)}</strong>. Los horarios te los confirma nuestro equipo en tienda.`);
     if (/\b(enviar|envia|mandar|manda|confirmar|confirmo)\b/.test(t) && !res.exacto) return enviarATienda();
+    if (/\b(quita|quitar|quitame|elimina|eliminar|saca|sacar|borra|borrar|remueve|remover)\b/.test(t) && cot.size) return quitarPorTexto(q);
     if (/\b(vaciar|borrar|limpiar)\b/.test(t) && !res.exacto) return vaciar();
     if (/\b(cotizacion|resumen|total|carrito|mi pedido)\b/.test(t) && !res.exacto) return verCotizacion();
 
@@ -310,6 +345,11 @@
       const cant = n > 0 ? n : 1;
       yo(`Agregar ${cant} × ${productos[+b.dataset.add].nombre}`);
       agregar(+b.dataset.add, cant);
+    } else if (b.dataset.quitar !== undefined) {
+      const id = +b.dataset.quitar;
+      if (!cot.has(id)) return;
+      yo(`Quitar ${productos[id].nombre}`);
+      quitar(id, 0);
     } else if (b.dataset.cat) {
       procesar(b.dataset.cat);
     } else if (b.dataset.avisar !== undefined) {
