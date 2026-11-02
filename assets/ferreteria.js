@@ -13,7 +13,8 @@
   const clp = (n) => "$" + Math.round(n).toLocaleString("es-CL");
   const norm = (s) => String(s).toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "");
   const fecha = (iso) => iso.split("-").reverse().join("-");
-  const wa = (msg) => `https://wa.me/${F.whatsapp}?text=${encodeURIComponent(msg)}`;
+  // Demo: los botones de WhatsApp abren la simulación (comparte la cotización).
+  const wa = () => "/demo-whatsapp";
   const img = (src, alt, cls = "") =>
     `<img class="${cls}" src="${esc(src)}" alt="${esc(alt)}" loading="lazy" decoding="async" onerror="this.classList.add('is-broken')">`;
 

@@ -93,8 +93,28 @@
 
   /* ---------- Estado ---------- */
   const cot = new Map(); // id -> cantidad
+  /* Cotización compartida entre /ferreteria y /demo-whatsapp (mismo navegador). */
+  const CLAVE = "ld-cotizacion-demo";
+  function cargarCot(cot, productos) {
+    try {
+      const raw = JSON.parse(localStorage.getItem(CLAVE) || "[]");
+      cot.clear();
+      (Array.isArray(raw) ? raw : []).forEach(([id, c]) => {
+        const p = productos[id];
+        if (p && p.stock > 0 && c > 0) cot.set(id, Math.min(Math.floor(c), p.stock));
+      });
+    } catch (_) {}
+  }
+  function guardarCot(cot) {
+    try {
+      if (cot.size) localStorage.setItem(CLAVE, JSON.stringify([...cot]));
+      else localStorage.removeItem(CLAVE);
+    } catch (_) {}
+  }
+  const guardar = () => { if (!jugando) guardarCot(cot); };
   const total = () => [...cot].reduce((s, [id, c]) => s + productos[id].precio * c, 0);
   let nCot = 0;
+  cargarCot(cot, productos);
   let gen = 0; // se incrementa al reiniciar para descartar mensajes pendientes
   let cola = Promise.resolve();
   let jugando = false;
@@ -193,6 +213,7 @@
       return bot(`Ya tienes en tu cotización todo el stock disponible de <strong>${esc(p.nombre)}</strong> (${p.stock}).`);
     const n = Math.min(cant, libre);
     cot.set(id, ya + n);
+    guardar();
     const aviso = n < cant ? `Pediste ${cant}, pero hay ${libre} disponibles. ` : "";
     bot(
       `${aviso}Agregué <strong>${n} × ${esc(p.nombre)}</strong> (${clp(p.precio * n)}). ¿Algo más?` +
@@ -220,6 +241,7 @@
       `Total referencial: ${monto} (IVA incluido, precios de lista).`;
     const enlace = `https://wa.me/${DEMO_WHATSAPP}?text=${encodeURIComponent(msg)}`;
     cot.clear();
+    guardar();
     if (jugando) {
       // Ejemplo guiado: todo simulado, no se abre WhatsApp.
       return bot(
@@ -242,9 +264,11 @@
     if (!ya) return;
     if (cant && cant < ya) {
       cot.set(id, ya - cant);
+      guardar();
       return bot(`Listo, saqué ${cant} × <strong>${esc(p.nombre)}</strong>. Quedan ${ya - cant}.${cot.size ? lineasCot(true) : ""}`);
     }
     cot.delete(id);
+    guardar();
     bot(
       `Listo, quité <strong>${esc(p.nombre)}</strong> de tu cotización.` +
         (cot.size ? `${lineasCot(true)}${qr(["enviar", "Enviar a la tienda"], ["seguir", "Seguir agregando"])}` : " Quedó vacía; escribe un producto para empezar.")
@@ -267,13 +291,17 @@
 
   function vaciar() {
     cot.clear();
+    guardar();
     bot("Vacié tu cotización. ¿Qué producto buscas?");
   }
 
   const saludo = () =>
     bot(
       `¡Hola! Soy el asistente de cotización de <strong>Ferretería ${esc(F.nombre)}</strong>. ` +
-        `Dime qué producto necesitas, por ejemplo <em>«12 sacos cemento melón»</em>, o elige una categoría:${chips()}`
+        (cot.size
+          ? `Ya tienes <strong>${cot.size} ${cot.size === 1 ? "producto" : "productos"}</strong> en tu cotización (la armaste en la tienda en línea). ¿La revisamos o la enviamos?` +
+            qr(["ver", "Ver mi cotización"], ["enviar", "Enviar a la tienda"])
+          : `Dime qué producto necesitas, por ejemplo <em>«12 sacos cemento melón»</em>, o elige una categoría:${chips()}`)
     );
 
   function responder(q) {
@@ -366,11 +394,12 @@
   });
 
   /* ---------- Reinicio y ejemplo guiado ---------- */
-  function reiniciar() {
+  function reiniciar(desdeEjemplo) {
     gen += 1;
     cola = Promise.resolve();
     chat.innerHTML = "";
-    cot.clear();
+    if (desdeEjemplo === "limpiar") { cot.clear(); guardar(); }
+    else if (desdeEjemplo === true) cot.clear();
     nCot = 0;
     const dia = document.createElement("div");
     dia.className = "wa__day";
@@ -380,7 +409,7 @@
   }
   resetBtn.addEventListener("click", () => {
     if (jugando) return;
-    reiniciar();
+    reiniciar("limpiar");
   });
 
   function bloquear(si) {
@@ -399,7 +428,8 @@
   }
   async function ejemplo() {
     if (jugando) return;
-    reiniciar();
+    const previa = new Map(cot);
+    reiniciar(true);
     bloquear(true);
     const g = gen;
     const pasos = [
@@ -418,8 +448,14 @@
       procesar(paso);
       await cola;
     }
+    // El ejemplo no toca tu cotización real: se restaura al terminar.
+    cot.clear();
+    previa.forEach((v, k) => cot.set(k, v));
     bloquear(false);
+    if (previa.size)
+      bot(`Tu cotización de la ferretería sigue guardada (${previa.size} ${previa.size === 1 ? "producto" : "productos"}).${qr(["ver", "Ver mi cotización"], ["enviar", "Enviar a la tienda"])}`);
   }
 
+  window.addEventListener("pageshow", (e) => { if (e.persisted) location.reload(); });
   reiniciar();
 })();
