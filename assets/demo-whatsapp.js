@@ -13,6 +13,9 @@
   const resetBtn = document.getElementById("waReset");
   if (!CAT || !F || !chat) return;
 
+  // Número que recibe las cotizaciones de esta demo (solo se usa aquí; el resto del sitio usa números de prueba).
+  const DEMO_WHATSAPP = "56979692379";
+
   document.getElementById("waNombre").textContent = `Ferretería ${F.nombre}`;
 
   /* ---------- Utilidades ---------- */
@@ -206,11 +209,25 @@
     nCot += 1;
     const num = String(nCot).padStart(4, "0");
     const monto = clp(total());
+    const lineas = [...cot].map(([id, c]) => `• ${c} × ${productos[id].nombre} — ${clp(productos[id].precio * c)}`).join("\n");
+    const msg =
+      `[DEMO] Cotización N° ${num} — Ferretería ${F.nombre}\n\n${lineas}\n\n` +
+      `Total referencial: ${monto} (IVA incluido, precios de lista).`;
+    const enlace = `https://wa.me/${DEMO_WHATSAPP}?text=${encodeURIComponent(msg)}`;
     cot.clear();
+    if (jugando) {
+      // Ejemplo guiado: todo simulado, no se abre WhatsApp.
+      return bot(
+        `✅ Listo. Registré tu cotización <strong>N° ${num}</strong> por <strong>${monto}</strong> (IVA incluido).<br><br>` +
+          `Pásate por <strong>${esc(F.direccion)}</strong> para confirmarla y retirar. Nuestro equipo revisa contigo descuentos y condiciones.` +
+          `<span class="msg__note">Ejemplo: aquí se enviaría la cotización a la tienda.</span>`
+      );
+    }
     bot(
-      `✅ Listo. Registré tu cotización <strong>N° ${num}</strong> por <strong>${monto}</strong> (IVA incluido).<br><br>` +
-        `Pásate por <strong>${esc(F.direccion)}</strong> para confirmarla y retirar. Nuestro equipo revisa contigo descuentos y condiciones.` +
-        `<span class="msg__note">Simulación: en la versión conectada, este mensaje llegaría al equipo de la tienda.</span>`
+      `✅ Listo. Armé tu cotización <strong>N° ${num}</strong> por <strong>${monto}</strong> (IVA incluido).<br><br>` +
+        `Toca el botón para enviarla por WhatsApp a la tienda. Después te esperamos en <strong>${esc(F.direccion)}</strong> para confirmarla y retirar.` +
+        `<div class="qr"><a href="${enlace}" target="_blank" rel="noopener">Enviar por WhatsApp</a></div>` +
+        `<span class="msg__note">Demo: se abrirá tu WhatsApp con la cotización lista para enviar.</span>`
     );
   }
 
