@@ -148,7 +148,7 @@
             <p class="visita__dir">${icoPin} ${esc(F.direccion)}</p>
             <p>${esc(F.texto)}</p>
             <div class="visita__acc">
-              <a class="tbtn" href="${wa(F.mensaje)}" target="_blank" rel="noopener">Cotizar por WhatsApp</a>
+              <a class="tbtn" href="/demo-whatsapp">Cotizar por WhatsApp</a>
               <a class="tbtn tbtn--line" href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(F.direccion)}" target="_blank" rel="noopener">Cómo llegar</a>
             </div>
           </div>
@@ -156,7 +156,6 @@
       </div>
     </div>
 
-    <button class="asistente-fab" id="tFab" type="button" aria-controls="tPanel" aria-expanded="false">${icoChat}<span>Asistente</span></button>
     <div class="tpanel__veil" id="tVeil" hidden></div>
     <aside class="tpanel" id="tPanel" aria-label="${esc(F.chatEtiqueta)}" aria-hidden="true">
       <button class="tpanel__close" id="tCerrar" type="button" aria-label="Cerrar">×</button>
@@ -229,7 +228,7 @@
   /* ---------- Panel del asistente ---------- */
   const panel = $("#tPanel");
   const veil = $("#tVeil");
-  const abridores = [$("#tAbrirCot"), $("#tFab")];
+  const abridores = [$("#tAbrirCot")];
   function panelAbierto(on) {
     panel.classList.toggle("is-open", on);
     panel.setAttribute("aria-hidden", String(!on));
@@ -248,7 +247,6 @@
     const b = $("#tCount");
     b.hidden = !n;
     b.textContent = n;
-    $("#tFab").classList.toggle("has-items", n > 0);
   });
 
   /* ---------- Eventos ---------- */
