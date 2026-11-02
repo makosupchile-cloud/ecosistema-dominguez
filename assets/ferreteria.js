@@ -161,6 +161,7 @@
     <aside class="tpanel" id="tPanel" aria-label="${esc(F.chatEtiqueta)}" aria-hidden="true">
       <button class="tpanel__close" id="tCerrar" type="button" aria-label="Cerrar">×</button>
       <div class="chat-slot" id="chat-widget-slot" data-widget="ferreteria-bot"></div>
+      <a class="tpanel__demo" href="/demo-whatsapp" target="_blank" rel="noopener">Ver cómo se vería en WhatsApp <span aria-hidden="true">↗</span></a>
     </aside>`;
 
   const $ = (s) => root.querySelector(s);

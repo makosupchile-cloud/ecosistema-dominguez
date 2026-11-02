@@ -73,7 +73,7 @@ window.SITE = {
       { t: "Retiro en tienda", d: "Uribe 406, Cañete" },
       { t: "Confirmas por WhatsApp", d: "Te responde nuestro equipo" },
     ],
-    whatsapp: "56900000000",
+    whatsapp: "56979692379", // número de Raúl para la demo; las cotizaciones llegan a su celular
     mensaje: "Hola, quiero cotizar en Ferretería La Italiana.",
   },
 
