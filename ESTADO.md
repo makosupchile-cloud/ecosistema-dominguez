@@ -1,13 +1,13 @@
 # Estado del proyecto — Ecosistema Domínguez
 
-Actualizado: 2026-10-28 · Propuesta conceptual — Reanimasem Agencia
+Actualizado: 2026-11-10 · Propuesta conceptual — Reanimasem Agencia
 
 ## Publicación
 - **URL:** https://ecosistema-dominguez.vercel.app
 - **Repo:** https://github.com/makosupchile-cloud/ecosistema-dominguez (rama `main`)
 - **Vercel:** proyecto `ecosistema-dominguez`, equipo `reanimasem`, conectado a GitHub.
   Cada push a `main` se publica solo en producción.
-- **Último deploy revisado:** commit `fca658c` (PR #5, caché), estado READY.
+- **Último deploy revisado:** commit `7a44ebc` (PR #9, cotización compartida con la demo), estado READY en producción.
 - **Acceso:** producción pública (sin login de Vercel); los previews siguen protegidos.
 - Sitio estático (HTML + CSS + JS), sin build, servidor ni base de datos.
 
@@ -19,7 +19,8 @@ Cormorant Garamond (títulos) e Inter (texto); mobile-first.
 | Ruta | Contenido |
 |---|---|
 | `/` | Hero, índice hacia las 4 unidades y enlaces cruzados |
-| `/ferreteria` | Tienda de Ferretería La Italiana (Uribe 406): carrusel por categoría, fichas de producto con stock y precio, filtros. Panel «Mi cotización» con el asistente (ver abajo) y botón de WhatsApp. |
+| `/ferreteria` | Tienda de Ferretería La Italiana (Uribe 406): carrusel por categoría, fichas de producto con stock y precio, filtros. Panel «Mi cotización» con el asistente (ver abajo). «Cotizar por WhatsApp» abre `/demo-whatsapp` en la misma pestaña; ya no existe el botón flotante «Asistente». |
+| `/demo-whatsapp` | Simulación tipo chat de la cotización de la ferretería, con el mismo catálogo y reglas. Carga la cotización armada en `/ferreteria`; se puede quitar productos escribiendo «quita…». Incluye un ejemplo guiado. |
 | `/centro-vacacional` | Hero «Desconéctate sin salir de Cañete», galería (cabañas, piscina, naturaleza), espacio para video de fondo, WhatsApp A |
 | `/restaurante` | «Sabor casero en Cañete»: carta navegable (colación, platos de la casa, tragos) con pedido por WhatsApp (retiro o delivery); botón y QR al PDF del menú; WhatsApp B |
 | `/hoteleria` | «Tu descanso en Cañete»: buscador de fechas y huéspedes, 4 tipos de pieza (simple, doble, matrimonial, cuatro personas) con capacidad, características y precio referencial, servicios, ubicación y preguntas frecuentes; la solicitud sale por WhatsApp con fechas y pieza; WhatsApp C |
@@ -28,7 +29,9 @@ Pie en todas las páginas: «Propuesta conceptual — Reanimasem Agencia».
 Todo termina en WhatsApp: no hay pagos ni reservas en línea.
 
 ## Asistente de cotización (única automatización)
-`assets/cotizador.js`, montado en el panel lateral de `/ferreteria`.
+`assets/cotizador.js`, montado en el panel lateral de `/ferreteria`; la simulación de chat vive en `assets/demo-whatsapp.js`.
+- La cotización se guarda en `localStorage` y la comparten `/ferreteria` y `/demo-whatsapp`: quitar, vaciar o enviar en una se refleja en la otra (solo en el mismo navegador).
+- En la demo, «Enviar a la tienda» fuera del ejemplo guiado ofrece un botón que abre WhatsApp con la cotización armada (marcada `[DEMO]`) hacia el número definido en `DEMO_WHATSAPP`, dentro de `assets/demo-whatsapp.js`. Ese número es el de Raúl y no se usa en ninguna otra página.
 - Corre en el navegador sobre `assets/catalogo.js` (catálogo de prueba, 33 productos).
 - Busca por texto (sin tildes, plurales, «10mm») y entiende cantidades («3 sacos cemento melón»).
 - Controla stock: limita la cantidad, avisa si no hay y ofrece alternativas.
@@ -46,8 +49,9 @@ Todo termina en WhatsApp: no hay pagos ni reservas en línea.
 
 ## Pendientes
 **Datos reales (hoy son de prueba)**
-1. Los 4 números de WhatsApp: ferretería `56900000000`, centro vacacional `56900000001`,
-   restaurante `56900000002`, hotelería `56900000003`.
+1. Los 4 números de WhatsApp del sitio siguen siendo de prueba: ferretería `56900000000`, centro vacacional
+   `56900000001`, restaurante `56900000002`, hotelería `56900000003`. La única excepción es la demo
+   (`DEMO_WHATSAPP`, ver arriba). Cualquier número real del cliente se define con él, no antes.
 2. Catálogo de la ferretería (stock del 2026-10-20) y carta del restaurante (2026-10-27).
 3. Precios de hotelería (genéricos).
 4. PDF del menú (provisional).
@@ -57,7 +61,8 @@ Todo termina en WhatsApp: no hay pagos ni reservas en línea.
    wordmark tipográfico. Poner el archivo en `assets/` y su ruta en `ferreteria.logo`.
 6. Video de fondo del centro vacacional (`vacacional.video`); hoy es una foto con la etiqueta
    «Espacio para video de fondo».
-7. Bot real de la ferretería, que reemplazaría al cotizador (se monta en `#chat-widget-slot`).
+7. Bot real de la ferretería, que reemplazaría al cotizador (se monta en `#chat-widget-slot`). Hoy no hay IA, ni
+   sincronización con el stock real, ni agendamiento o pipeline conectado: lo construido muestra la experiencia, no el producto.
 8. Dirección exacta del hotel (`hoteleria.direccion`, vacía): el mapa apunta a «Cañete».
 
 **Verificación y cierre**
@@ -77,3 +82,7 @@ Todo termina en WhatsApp: no hay pagos ni reservas en línea.
 8. PR #3 `hoteleria-reservas`: buscador de fechas y solicitud por WhatsApp en `/hoteleria`
 9. PR #4 `restaurante-pedidos`: carta navegable y pedido por WhatsApp en `/restaurante`
 10. PR #5 `cache-assets`: versionado de archivos para evitar caché viejo (`fca658c`)
+11. PR #6 `demo-whatsapp`: simulación tipo chat en `/demo-whatsapp`
+12. PR #7 `demo-envio-whatsapp`: el envío final de la demo abre WhatsApp hacia el número de la demo; `/ferreteria` vuelve a número de prueba
+13. PR #8 `demo-quitar-items`: «Cotizar por WhatsApp» abre la demo, se elimina el botón «Asistente» y la demo permite quitar productos
+14. PR #9 `demo-cotizacion-compartida`: la cotización se comparte entre `/ferreteria` y la demo (`7a44ebc`)
