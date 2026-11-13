@@ -29,7 +29,7 @@ Todo termina en WhatsApp: no hay pagos ni reservas en línea.
 
 ## Asistente de cotización (única automatización)
 `assets/cotizador.js`, montado en el panel lateral de `/ferreteria`.
-- Corre en el navegador sobre `assets/catalogo.js` (catálogo de prueba, 33 productos).
+- Corre en el navegador sobre `assets/catalogo.js` (catálogo de prueba, 34 productos).
 - Busca por texto (sin tildes, plurales, «10mm») y entiende cantidades («3 sacos cemento melón»).
 - Controla stock: limita la cantidad, avisa si no hay y ofrece alternativas.
 - Arma la cotización con total (IVA incluido) y la envía por WhatsApp.

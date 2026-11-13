@@ -53,6 +53,7 @@ window.CATALOGO = {
     // HERRAMIENTAS
     { cat: "Herramientas", nombre: "Martillo carpintero 16 oz", stock: 15, precio: 7990 },
     { cat: "Herramientas", nombre: "Taladro percutor 650 W", stock: 6, precio: 39990 },
+    { cat: "Herramientas", nombre: "Sierra circular 7 1/4 pulgadas 1.400 W", stock: 5, precio: 59990 },
     { cat: "Herramientas", nombre: "Disco corte metal 4 1/2 pulgadas", stock: 100, precio: 1490 },
     { cat: "Herramientas", nombre: "Guantes de cuero (par)", stock: 50, precio: 3490 },
   ],
