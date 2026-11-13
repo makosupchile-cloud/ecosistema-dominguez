@@ -149,7 +149,7 @@
             <p class="visita__dir">${icoPin} ${esc(F.direccion)}</p>
             <p>${esc(F.texto)}</p>
             <div class="visita__acc">
-              <a class="tbtn" href="/demo-whatsapp">Cotizar por WhatsApp</a>
+              <a class="tbtn" href="/demo-whatsapp" target="_blank" rel="noopener">Cotizar por WhatsApp</a>
               <a class="tbtn tbtn--line" href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(F.direccion)}" target="_blank" rel="noopener">Cómo llegar</a>
             </div>
           </div>

@@ -7,7 +7,9 @@
    ========================================================================== */
 
 window.CATALOGO = {
-  actualizado: "2026-10-20", // fecha del stock (AAAA-MM-DD)
+  // Fecha del stock (AAAA-MM-DD): en la demo siempre es "hoy" (hora de Chile), para que el stock se vea al día.
+  // Cuando se conecte el stock real, reemplazar por la fecha de la última sincronización.
+  actualizado: new Intl.DateTimeFormat("en-CA", { timeZone: "America/Santiago" }).format(new Date()),
   productos: [
     // CONSTRUCCIÓN
     { cat: "Construcción", nombre: "Cemento Melón 25 kg (saco)", stock: 20, precio: 7990 },

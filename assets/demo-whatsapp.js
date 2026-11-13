@@ -13,8 +13,8 @@
   const resetBtn = document.getElementById("waReset");
   if (!CAT || !F || !chat) return;
 
-  // Número que recibe las cotizaciones de esta demo (solo se usa aquí; el resto del sitio usa números de prueba).
-  const DEMO_WHATSAPP = "56979692379";
+  // Quien "responde" en la simulación cuando el cliente envía su cotización a la tienda.
+  const AGENTE = "Marcelo · Bodega";
 
   document.getElementById("waNombre").textContent = `Ferretería ${F.nombre}`;
 
@@ -34,7 +34,10 @@
       .trim();
   const esperar = (ms) => new Promise((r) => setTimeout(r, ms));
   const sinMov = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-  const hora = () => new Date().toLocaleTimeString("es-CL", { hour: "2-digit", minute: "2-digit", hour12: false });
+  // Hora real de Chile (no la del dispositivo), para que el chat siempre marque la hora correcta.
+  const hora = () => new Date().toLocaleTimeString("es-CL", { hour: "2-digit", minute: "2-digit", hour12: false, timeZone: "America/Santiago" });
+  const fmtUn = (n) => `${n} ${n === 1 ? "unidad" : "unidades"}`;
+  const fmtProd = (n) => `${n} ${n === 1 ? "producto" : "productos"}`;
   const texto = (html) => html.replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim();
 
   const productos = CAT.productos.map((p, i) => ({ ...p, id: i, texto: norm(p.nombre + " " + p.cat) }));
@@ -61,6 +64,8 @@
 
   function parse(q) {
     let t = norm(q);
+    // Muletillas de maestro antes de la cantidad: «buenas necesito 12 sacos…», «dame 8 pinos…», «y 40 barras…»
+    t = t.replace(/^(?:(?:y|e|tambien|ademas|agrega|agregame|suma|sumale|ponme|pon|dame|deme|necesito|quiero|busco|hola|buenas|buenos|dias|tardes|noches|maestro|oye|amigo|porfa|favor|por|me|puede|pueden|podria|podrian|cotizame|cotiza|cotizar|un|una)\s+)+(?=\d)/, "");
     let cantidad = null;
     let m;
     if ((m = t.match(new RegExp(`(^|\\s)(\\d{1,4})\\s+(${UNIDADES})\\b`)))) {
@@ -113,6 +118,7 @@
   }
   const guardar = () => { if (!jugando) guardarCot(cot); };
   const total = () => [...cot].reduce((s, [id, c]) => s + productos[id].precio * c, 0);
+  const unidades = () => [...cot.values()].reduce((s, c) => s + c, 0);
   let nCot = 0;
   cargarCot(cot, productos);
   let gen = 0; // se incrementa al reiniciar para descartar mensajes pendientes
@@ -152,6 +158,16 @@
       pintar("in", html);
     });
   }
+  // Respuesta de una persona de la tienda (con su nombre), tras un "escribiendo…" más largo que el del asistente.
+  function agente(html, espera) {
+    return enc(async (g) => {
+      const t = escribiendo();
+      if (!sinMov) await esperar(espera || 2200);
+      t.remove();
+      if (g !== gen) return;
+      pintar("in", `<span class="msg__who">${esc(AGENTE)}</span>${html}`);
+    });
+  }
   function yo(txt) {
     return enc(async () => {
       pintar("out", esc(txt));
@@ -169,12 +185,17 @@
     return `<ul class="items">${lista
       .map((p) => {
         const hay = p.stock > 0;
+        const libre = p.stock - (cot.get(p.id) || 0); // el stock se descuenta de lo que ya cotizó el cliente
         const estado = hay
-          ? `${p.stock} disponibles`
+          ? libre > 0
+            ? `${libre} disponibles`
+            : "Todo el stock ya está en tu cotización"
           : `Sin stock${p.reposicion ? ` · reposición: ${esc(p.reposicion)}` : ""}`;
         const accion = hay
-          ? `<input type="number" inputmode="numeric" min="1" max="${p.stock}" value="${Math.min(cantidad || 1, p.stock)}" aria-label="Cantidad de ${esc(p.nombre)}">
+          ? libre > 0
+            ? `<input type="number" inputmode="numeric" min="1" max="${libre}" value="${Math.min(cantidad || 1, libre)}" aria-label="Cantidad de ${esc(p.nombre)}">
              <button type="button" data-add="${p.id}">Agregar</button>`
+            : ""
           : `<button type="button" data-avisar="${p.id}">Avisarme</button>`;
         return `<li class="${hay ? "" : "is-out"}">
           <div class="items__info"><span class="items__name">${esc(p.nombre)}</span><small>${clp(p.precio)} · ${estado}</small></div>
@@ -221,10 +242,41 @@
     );
   }
 
+  /* Pedido de varios productos en un solo mensaje: «10 sacos cemento melón y 8 fierros de 10».
+     Solo se aplica si cada parte trae cantidad y calza con un único producto; si no, se responde como siempre. */
+  function pedirVarios(q) {
+    const partes = q.split(/\s*(?:,|\by\b|\be\b|\bmas\b|\bmás\b|\+)\s+(?=\d)/i).filter(Boolean);
+    if (partes.length < 2) return false;
+    const res = partes.map((txt) => {
+      const { cantidad, tokens } = parse(txt);
+      const { lista, exacto } = buscar(tokens);
+      return { cantidad, lista, exacto };
+    });
+    if (!res.every((r) => r.cantidad && r.exacto && r.lista.length === 1)) return false;
+    const filas = res.map((r) => {
+      const p = r.lista[0];
+      const ya = cot.get(p.id) || 0;
+      const libre = Math.max(0, p.stock - ya);
+      const n = Math.min(r.cantidad, libre);
+      if (n > 0) cot.set(p.id, ya + n);
+      return { p, n, pedido: r.cantidad, libre };
+    });
+    guardar();
+    const lineas = filas
+      .map(({ p, n, pedido, libre }) =>
+        n
+          ? `• <strong>${n} × ${esc(p.nombre)}</strong> (${clp(p.precio * n)})${n < pedido ? ` — pediste ${pedido}, solo hay ${libre}` : ""}`
+          : `• ${esc(p.nombre)}: sin stock disponible`
+      )
+      .join("<br>");
+    bot(`Listo, agregué a tu cotización:<br>${lineas}<br>¿Algo más?` + qr(["ver", "Ver mi cotización"], ["seguir", "Seguir buscando"]));
+    return true;
+  }
+
   function verCotizacion() {
     if (!cot.size) return bot("Tu cotización está vacía por ahora. Escribe un producto para empezar.");
     bot(
-      `Esta es tu cotización (${cot.size} ${cot.size === 1 ? "producto" : "productos"}):${lineasCot(true)}` +
+      `Esta es tu cotización (${fmtUn(unidades())} en ${fmtProd(cot.size)}):${lineasCot(true)}` +
         `<span class="msg__note">Precios de lista con IVA incluido. Toca ✕ o escribe «quita el cemento» para sacar un producto.</span>` +
         qr(["enviar", "Enviar a la tienda"], ["seguir", "Seguir agregando"], ["vaciar", "Vaciar cotización"])
     );
@@ -235,26 +287,25 @@
     nCot += 1;
     const num = String(nCot).padStart(4, "0");
     const monto = clp(total());
-    const lineas = [...cot].map(([id, c]) => `• ${c} × ${productos[id].nombre} — ${clp(productos[id].precio * c)}`).join("\n");
-    const msg =
-      `[DEMO] Cotización N° ${num} — Ferretería ${F.nombre}\n\n${lineas}\n\n` +
-      `Total referencial: ${monto} (IVA incluido, precios de lista).`;
-    const enlace = `https://wa.me/${DEMO_WHATSAPP}?text=${encodeURIComponent(msg)}`;
+    const resumen = lineasCot(false); // se arma antes de vaciar la cotización
+    const u = unidades();
+    const n = cot.size;
     cot.clear();
     guardar();
-    if (jugando) {
-      // Ejemplo guiado: todo simulado, no se abre WhatsApp.
-      return bot(
-        `✅ Listo. Registré tu cotización <strong>N° ${num}</strong> por <strong>${monto}</strong> (IVA incluido).<br><br>` +
-          `Pásate por <strong>${esc(F.direccion)}</strong> para confirmarla y retirar. Nuestro equipo revisa contigo descuentos y condiciones.` +
-          `<span class="msg__note">Ejemplo: aquí se enviaría la cotización a la tienda.</span>`
-      );
-    }
+    // 1) Confirmación del envío (sistema de la tienda)
     bot(
-      `✅ Listo. Armé tu cotización <strong>N° ${num}</strong> por <strong>${monto}</strong> (IVA incluido).<br><br>` +
-        `Toca el botón para enviarla por WhatsApp a la tienda. Después te esperamos en <strong>${esc(F.direccion)}</strong> para confirmarla y retirar.` +
-        `<div class="qr"><a href="${enlace}" target="_blank" rel="noopener">Enviar por WhatsApp</a></div>` +
-        `<span class="msg__note">Demo: se abrirá tu WhatsApp con la cotización lista para enviar.</span>`
+      `✅ Enviada. Tu cotización <strong>N° ${num}</strong> (${fmtUn(u)} en ${fmtProd(n)}) por <strong>${monto}</strong> ya está con el equipo de la tienda. ` +
+        `Un encargado la está revisando.`
+    );
+    // 2) Responde una persona de bodega: confirma stock y deja la cotización lista para retirar
+    agente(
+      `Hola, soy Marcelo de bodega. Recibí tu cotización <strong>N° ${num}</strong> y ya revisé el stock: tenemos todo disponible.` +
+        `${resumen}` +
+        `Te la dejo separada para que pases a retirar a <strong>${esc(F.direccion)}</strong> y la confirmas en caja. ` +
+        `Si llevas por volumen, el encargado te ve el precio contigo ahí mismo. Cualquier cambio me avisas por aquí.` +
+        `<span class="msg__note">Simulación: así respondería el equipo de la tienda a una cotización recibida.</span>` +
+        qr(["seguir", "Armar otra cotización"]),
+      2400
     );
   }
 
@@ -299,7 +350,7 @@
     bot(
       `¡Hola! Soy el asistente de cotización de <strong>Ferretería ${esc(F.nombre)}</strong>. ` +
         (cot.size
-          ? `Ya tienes <strong>${cot.size} ${cot.size === 1 ? "producto" : "productos"}</strong> en tu cotización (la armaste en la tienda en línea). ¿La revisamos o la enviamos?` +
+          ? `Ya tienes <strong>${fmtUn(unidades())}</strong> (${fmtProd(cot.size)}) en tu cotización (la armaste en la tienda en línea). ¿La revisamos o la enviamos?` +
             qr(["ver", "Ver mi cotización"], ["enviar", "Enviar a la tienda"])
           : `Dime qué producto necesitas, por ejemplo <em>«12 sacos cemento melón»</em>, o elige una categoría:${chips()}`)
     );
@@ -307,12 +358,13 @@
   function responder(q) {
     const t = norm(q);
     if (!t) return;
+    if (pedirVarios(q)) return;
     const { cantidad, tokens } = parse(q);
     const res = buscar(tokens);
 
     if (/^(hola|buenas|buenos|alo)\b/.test(t) && !tokens.length) return saludo();
     if (/\bgracias\b/.test(t)) return bot("¡De nada! Cuando quieras, te dejo la cotización registrada para que la confirmes en tienda.");
-    if (/\b(descuento|descuentos|rebaja|oferta|mayorista|por mayor|precio especial)\b/.test(t))
+    if (/\b(descuento|descuentos|rebaja|oferta|mayorista|por mayor|precio especial|volumen)\b/.test(t))
       return bot("Los precios que te muestro son de lista. Descuentos y condiciones especiales los confirma directamente nuestro equipo en tienda.");
     if (/\b(despacho|despachos|envio|envios|delivery|reparto)\b/.test(t))
       return bot(`El despacho lo confirma nuestro equipo en tienda (<strong>${esc(F.direccion)}</strong>). Si quieres, deja tu cotización armada y la revisan contigo.`);
@@ -433,8 +485,8 @@
     bloquear(true);
     const g = gen;
     const pasos = [
-      "Necesito 12 sacos de cemento melón",
-      "Y 40 barras de fierro 10 mm",
+      "Buenas, necesito 12 sacos de cemento melón y 40 fierros de 10",
+      "Dame 8 pinos 2x4 también",
       "Ver mi cotización",
       "Enviar a la tienda",
     ];
@@ -453,7 +505,7 @@
     previa.forEach((v, k) => cot.set(k, v));
     bloquear(false);
     if (previa.size)
-      bot(`Tu cotización de la ferretería sigue guardada (${previa.size} ${previa.size === 1 ? "producto" : "productos"}).${qr(["ver", "Ver mi cotización"], ["enviar", "Enviar a la tienda"])}`);
+      bot(`Tu cotización de la ferretería sigue guardada (${fmtUn([...previa.values()].reduce((s, c) => s + c, 0))} en ${fmtProd(previa.size)}).${qr(["ver", "Ver mi cotización"], ["enviar", "Enviar a la tienda"])}`);
   }
 
   window.addEventListener("pageshow", (e) => { if (e.persisted) location.reload(); });

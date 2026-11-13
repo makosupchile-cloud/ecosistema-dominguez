@@ -2,7 +2,7 @@
    CONFIGURACIÓN EDITABLE — Ecosistema Domínguez (propuesta conceptual)
    Todo el contenido del sitio sale de este archivo: textos, teléfonos,
    precios y rutas de imágenes. Edita aquí y vuelve a publicar.
-   - Teléfonos WhatsApp: solo dígitos, con código país (56) y sin "+".
+   - Teléfonos WhatsApp (hoy todos usan el número de pruebas de Raúl): solo dígitos, con código país (56) y sin "+".
    - Imágenes: URL absoluta (Unsplash) o ruta local, ej. "assets/img/cabana.jpg".
    ========================================================================== */
 
@@ -73,7 +73,7 @@ window.SITE = {
       { t: "Retiro en tienda", d: "Uribe 406, Cañete" },
       { t: "Confirmas por WhatsApp", d: "Te responde nuestro equipo" },
     ],
-    whatsapp: "56900000000",
+    whatsapp: "56979692379",
     mensaje: "Hola, quiero cotizar en Ferretería La Italiana.",
   },
 
@@ -84,14 +84,14 @@ window.SITE = {
     texto:
       "Cabañas equipadas, piscina y naturaleza a minutos del centro. Revisa disponibilidad y reserva directo por WhatsApp.",
     // Video de fondo: deja "" para usar solo la imagen. Ej: "assets/video/alto-tucapel.mp4"
-    video: "",
+    video: "https://assets.mixkit.co/videos/47286/47286-720.mp4", // video de stock (Mixkit, licencia gratuita)
     poster: U("photo-1449158743715-0a90ebb6d2d8", 2000),
     galeria: [
       { src: U("photo-1510798831971-661eb04b3739"), alt: "Cabaña de madera rodeada de bosque", pie: "Cabañas" },
       { src: U("photo-1571896349842-33c89424de2d"), alt: "Piscina al aire libre", pie: "Piscina" },
       { src: U("photo-1441974231531-c6227db76b6e"), alt: "Bosque nativo con luz de tarde", pie: "Naturaleza" },
     ],
-    whatsapp: "56900000001", // placeholder A
+    whatsapp: "56979692379",
     mensaje: "Hola, quiero consultar disponibilidad en el Centro Vacacional Alto Tucapel.",
   },
 
@@ -135,7 +135,7 @@ window.SITE = {
         ],
       },
     ],
-    whatsapp: "56900000002", // placeholder B
+    whatsapp: "56979692379",
     mensaje: "Hola, ¿cuál es el menú del día?",
   },
 
@@ -167,7 +167,7 @@ window.SITE = {
         imagen: U("photo-1631049307264-da0ec9d70304", 1000),
         capacidad: "1 persona",
         caracteristicas: ["Cama de 1,5 plazas", "Baño privado", "Wi-Fi", "Escritorio"],
-        precio: "$ 000.000",
+        precio: "$ 100.000",
       },
       {
         tipo: "Doble",
@@ -176,7 +176,7 @@ window.SITE = {
         imagen: U("photo-1590490360182-c33d57733427", 1000),
         capacidad: "2 personas",
         caracteristicas: ["Dos camas individuales", "Baño privado", "Wi-Fi", "TV"],
-        precio: "$ 000.000",
+        precio: "$ 100.000",
       },
       {
         tipo: "Matrimonial",
@@ -185,7 +185,7 @@ window.SITE = {
         imagen: U("photo-1611892440504-42a792e24d32", 1000),
         capacidad: "2 personas",
         caracteristicas: ["Cama de 2 plazas", "Baño privado", "Wi-Fi", "Ropa de cama premium"],
-        precio: "$ 000.000",
+        precio: "$ 100.000",
       },
       {
         tipo: "Cuatro personas",
@@ -194,10 +194,10 @@ window.SITE = {
         imagen: U("photo-1618773928121-c32242e63f39", 1000),
         capacidad: "4 personas",
         caracteristicas: ["Cama de 2 plazas + 2 individuales", "Baño privado", "Wi-Fi", "Amplio espacio"],
-        precio: "$ 000.000",
+        precio: "$ 100.000",
       },
     ],
-    whatsapp: "56900000003", // placeholder C
+    whatsapp: "56979692379",
     mensaje: "Hola, quiero reservar una pieza.",
   },
 
