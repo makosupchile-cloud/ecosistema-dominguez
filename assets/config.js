@@ -102,7 +102,8 @@ window.SITE = {
     texto:
       "Colación diaria, platos de la casa y buena carta de tragos. Consulta el menú del día por WhatsApp.",
     imagen: U("photo-1414235077428-338989a2e8c0", 2000),
-    menuPdf: "/assets/menu-placeholder.pdf",
+    // Ruta del PDF de la carta real (ej: "/assets/carta.pdf"). Vacío = no se muestra el botón "Carta en PDF".
+    menuPdf: "",
     secciones: [
       {
         titulo: "Colación del día",
@@ -167,7 +168,7 @@ window.SITE = {
         imagen: U("photo-1631049307264-da0ec9d70304", 1000),
         capacidad: "1 persona",
         caracteristicas: ["Cama de 1,5 plazas", "Baño privado", "Wi-Fi", "Escritorio"],
-        precio: "$ 100.000",
+        precio: "", // Pon aquí la tarifa real (ej: "$ 45.000"). Vacío = muestra "Consultar tarifa".
       },
       {
         tipo: "Doble",
@@ -176,7 +177,7 @@ window.SITE = {
         imagen: U("photo-1590490360182-c33d57733427", 1000),
         capacidad: "2 personas",
         caracteristicas: ["Dos camas individuales", "Baño privado", "Wi-Fi", "TV"],
-        precio: "$ 100.000",
+        precio: "", // Pon aquí la tarifa real (ej: "$ 45.000"). Vacío = muestra "Consultar tarifa".
       },
       {
         tipo: "Matrimonial",
@@ -185,7 +186,7 @@ window.SITE = {
         imagen: U("photo-1611892440504-42a792e24d32", 1000),
         capacidad: "2 personas",
         caracteristicas: ["Cama de 2 plazas", "Baño privado", "Wi-Fi", "Ropa de cama premium"],
-        precio: "$ 100.000",
+        precio: "", // Pon aquí la tarifa real (ej: "$ 45.000"). Vacío = muestra "Consultar tarifa".
       },
       {
         tipo: "Cuatro personas",
@@ -194,7 +195,7 @@ window.SITE = {
         imagen: U("photo-1618773928121-c32242e63f39", 1000),
         capacidad: "4 personas",
         caracteristicas: ["Cama de 2 plazas + 2 individuales", "Baño privado", "Wi-Fi", "Amplio espacio"],
-        precio: "$ 100.000",
+        precio: "", // Pon aquí la tarifa real (ej: "$ 45.000"). Vacío = muestra "Consultar tarifa".
       },
     ],
     whatsapp: "56979692379",

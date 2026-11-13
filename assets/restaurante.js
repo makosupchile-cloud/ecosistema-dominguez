@@ -93,7 +93,7 @@
           <p>Te esperamos en ${esc(S.ciudad)}. Si vienes en grupo, reserva tu mesa por WhatsApp.</p>
           <div class="resto__acc">
             <a class="rbtn" href="${wa("Hola, quiero reservar una mesa.")}" target="_blank" rel="noopener">${waIcon}<span>Reservar mesa</span></a>
-            <a class="rbtn rbtn--line" href="${esc(R.menuPdf)}" target="_blank" rel="noopener">Carta en PDF</a>
+            ${R.menuPdf ? `<a class="rbtn rbtn--line" href="${esc(R.menuPdf)}" target="_blank" rel="noopener">Carta en PDF</a>` : ""}
             <a class="rbtn rbtn--line" href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(S.ciudad + ", Provincia de Arauco, Chile")}" target="_blank" rel="noopener">Cómo llegar</a>
           </div>
         </div>
@@ -111,7 +111,7 @@
       <div class="rpanel__form">
         <p class="rpanel__modo" id="rModoTxt"></p>
         <label class="rcampo" id="rDirCampo" hidden><span>Dirección de entrega</span><input id="rDir" type="text" placeholder="Calle, número y referencia" autocomplete="street-address"></label>
-        <label class="rcampo"><span>Nombre</span><input id="rNombre" type="text" placeholder="¿A nombre de quién?" autocomplete="name"></label>
+        <label class="rcampo" id="rNombreCampo"><span>Nombre</span><input id="rNombre" type="text" placeholder="¿A nombre de quién?" autocomplete="name"></label>
         <label class="rcampo"><span>Comentarios</span><textarea id="rNota" rows="2" placeholder="Sin cebolla, punto de la carne, etc."></textarea></label>
       </div>
       <footer class="rpanel__foot">
@@ -227,14 +227,18 @@
 
   $("#rEnviar").addEventListener("click", () => {
     if (!pedido.size) return;
-    if (modo === "delivery" && !$("#rDir").value.trim()) {
-      $("#rDir").focus();
-      $("#rDirCampo").classList.add("is-error");
+    const sinDir = modo === "delivery" && !$("#rDir").value.trim();
+    const sinNombre = !$("#rNombre").value.trim();
+    $("#rDirCampo").classList.toggle("is-error", sinDir);
+    $("#rNombreCampo").classList.toggle("is-error", sinNombre);
+    if (sinDir || sinNombre) {
+      (sinDir ? $("#rDir") : $("#rNombre")).focus();
       return;
     }
     window.open(wa(mensaje()), "_blank", "noopener");
   });
   $("#rDir").addEventListener("input", () => $("#rDirCampo").classList.remove("is-error"));
+  $("#rNombre").addEventListener("input", () => $("#rNombreCampo").classList.remove("is-error"));
 
   /* ---------- Eventos de la carta ---------- */
   root.addEventListener("click", (e) => {
