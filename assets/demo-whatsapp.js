@@ -48,7 +48,7 @@
     ("de del la las el los un una unos unas y o a al en con para por que me se mi tu su lo le " +
       "hola quiero necesito busco buscando cotizar cotizacion cotiza precio precios valor cuanto " +
       "cuesta sale vale stock hay tienen tiene tienes queda quedan disponible favor porfa dame " +
-      "ver saber consultar consulta algo buenas buenos dias tardes noches alo")
+      "ver saber consultar consulta algo buenas buenos dias tardes noches alo mas esos esas eso ese esa nomas")
       .split(" ")
   );
   const SINONIMOS = { kilo: "kg", kilos: "kg", galones: "galon" };
@@ -62,19 +62,23 @@
   };
   const UNIDADES = "unidades|unidad|un|sacos|saco|barras|barra|planchas|plancha|rollos|rollo|cajas|caja|galones|galon|pares|par|tubos|tubo|kilos|kilo";
 
+  const UNITSET = new Set(UNIDADES.split("|"));
   function parse(q) {
     let t = norm(q);
     // Muletillas de maestro antes de la cantidad: «buenas necesito 12 sacos…», «dame 8 pinos…», «y 40 barras…»
-    t = t.replace(/^(?:(?:y|e|tambien|ademas|agrega|agregame|suma|sumale|ponme|pon|dame|deme|necesito|quiero|busco|hola|buenas|buenos|dias|tardes|noches|maestro|oye|amigo|porfa|favor|por|me|puede|pueden|podria|podrian|cotizame|cotiza|cotizar|un|una)\s+)+(?=\d)/, "");
+    t = t.replace(/^(?:(?:y|e|tambien|ademas|agrega|agregame|suma|sumale|ponme|pon|dame|deme|necesito|quiero|busco|hola|buenas|buenos|dias|tardes|noches|maestro|oye|amigo|porfa|favor|por|me|puede|pueden|podria|podrian|cotizame|cotiza|cotizar|un|una|mejor|solo|nomas|cambialo|cambiala|cambia|que|sean|ya|dale|ok|llevo|llevar|ponle|mandame|queria|llevaria|seria|esos|esas|eso)\s+)+(?=\d)/, "");
     let cantidad = null;
     let m;
-    if ((m = t.match(new RegExp(`(^|\\s)(\\d{1,4})\\s+(${UNIDADES})\\b`)))) {
+    if ((m = t.match(/^(\d{1,4})$/))) {
+      cantidad = +m[1]; // solo un número: «dame 10»
+      t = "";
+    } else if ((m = t.match(new RegExp(`(^|\\s)(\\d{1,4})\\s+(${UNIDADES})\\b`)))) {
       cantidad = +m[2];
       t = t.replace(m[0], `${m[1]}${m[3]}`);
     } else if ((m = t.match(/^(\d{1,4})\s+(?!(mm|cm|m|kg|w|oz|pulgadas?)\b)/))) {
       cantidad = +m[1];
       t = t.slice(m[0].length);
-    } else if ((m = t.match(/\s(?:x|por)\s*(\d{1,4})$/))) {
+    } else if ((m = t.match(/(?<!\d)\s(?:x|por)\s*(\d{1,4})$/))) {
       cantidad = +m[1];
       t = t.slice(0, m.index);
     }
@@ -82,7 +86,10 @@
       .split(" ")
       .filter((w) => w && !STOP.has(w) && (w.length > 1 || /\d/.test(w)))
       .map((w) => SINONIMOS[w] || ALIAS[w] || w);
-    return { cantidad: cantidad && cantidad > 0 ? cantidad : null, tokens };
+    // «cajas», «sacos»… son unidad de medida, no el producto: no deben bloquear la búsqueda («10 cajas de clavos de 3»).
+    const sinUn = tokens.filter((w) => !UNITSET.has(w));
+    const cant = cantidad && cantidad > 0 ? cantidad : null;
+    return { cantidad: cant, tokens: sinUn.length ? sinUn : tokens, soloCantidad: !!cant && !sinUn.length };
   }
   const coincide = (txt, tk) =>
     txt.includes(tk) ||
@@ -98,6 +105,7 @@
 
   /* ---------- Estado ---------- */
   const cot = new Map(); // id -> cantidad
+  let ctx = null; // producto del que se está hablando: «dame 10» se refiere a ese
   /* Cotización compartida entre /ferreteria y /demo-whatsapp (mismo navegador). */
   const CLAVE = "ld-cotizacion-demo";
   function cargarCot(cot, productos) {
@@ -229,6 +237,7 @@
     const p = productos[id];
     const ya = cot.get(id) || 0;
     const libre = p.stock - ya;
+    ctx = p.stock > 0 ? id : null;
     if (p.stock <= 0) return sinStock(p);
     if (libre <= 0)
       return bot(`Ya tienes en tu cotización todo el stock disponible de <strong>${esc(p.nombre)}</strong> (${p.stock}).`);
@@ -242,6 +251,22 @@
     );
   }
 
+  /* «Dame 10», «y 5 más», «mejor 20»: la cantidad se aplica al producto del que se venía hablando. */
+  function cantidadSuelta(n, t) {
+    if (ctx === null)
+      return bot(
+        `Dime de qué producto son esos ${n}: toca «Agregar» en uno de la lista o escribe el nombre (por ejemplo <em>«clavos de 3 pulgadas»</em>).`
+      );
+    const p = productos[ctx];
+    if (/\b(mejor|cambia|cambialo|cambiala|que sean|solo|nomas)\b/.test(t) && cot.has(ctx)) {
+      const nuevo = Math.min(n, p.stock);
+      cot.set(ctx, nuevo);
+      guardar();
+      return bot(`Listo, dejé <strong>${nuevo} × ${esc(p.nombre)}</strong> (${clp(p.precio * nuevo)}). ¿Algo más?` + qr(["ver", "Ver mi cotización"], ["seguir", "Seguir buscando"]));
+    }
+    agregar(ctx, n);
+  }
+
   /* Pedido de varios productos en un solo mensaje: «10 sacos cemento melón y 8 fierros de 10».
      Solo se aplica si cada parte trae cantidad y calza con un único producto; si no, se responde como siempre. */
   function pedirVarios(q) {
@@ -253,6 +278,7 @@
       return { cantidad, lista, exacto };
     });
     if (!res.every((r) => r.cantidad && r.exacto && r.lista.length === 1)) return false;
+    ctx = null;
     const filas = res.map((r) => {
       const p = r.lista[0];
       const ya = cot.get(p.id) || 0;
@@ -341,6 +367,7 @@
   }
 
   function vaciar() {
+    ctx = null;
     cot.clear();
     guardar();
     bot("Vacié tu cotización. ¿Qué producto buscas?");
@@ -359,7 +386,7 @@
     const t = norm(q);
     if (!t) return;
     if (pedirVarios(q)) return;
-    const { cantidad, tokens } = parse(q);
+    const { cantidad, tokens, soloCantidad } = parse(q);
     const res = buscar(tokens);
 
     if (/^(hola|buenas|buenos|alo)\b/.test(t) && !tokens.length) return saludo();
@@ -375,10 +402,13 @@
     if (/\b(vaciar|borrar|limpiar)\b/.test(t) && !res.exacto) return vaciar();
     if (/\b(cotizacion|resumen|total|carrito|mi pedido)\b/.test(t) && !res.exacto) return verCotizacion();
 
+    if (soloCantidad) return cantidadSuelta(cantidad, t);
+    ctx = null;
     const cat = categorias.find((c) => norm(c) === t || norm(c).split(" ")[0] === t);
     if (cat) return bot(`Esto tenemos en <strong>${esc(cat)}</strong>:${fichas(productos.filter((p) => p.cat === cat))}`);
 
     const { lista, exacto } = res;
+    if (lista.length === 1 && lista[0].stock > 0) ctx = lista[0].id; // «Lo tenemos»: lo que siga se refiere a este producto
     if (!lista.length)
       return bot(
         `No encontré «${esc(q)}» en el catálogo. Prueba con otra palabra o elige una categoría:${chips()}` +
@@ -450,6 +480,7 @@
     gen += 1;
     cola = Promise.resolve();
     chat.innerHTML = "";
+    ctx = null;
     if (desdeEjemplo === "limpiar") { cot.clear(); guardar(); }
     else if (desdeEjemplo === true) cot.clear();
     nCot = 0;
