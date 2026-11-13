@@ -95,7 +95,7 @@
                     ${p.descripcion ? `<p class="pieza__desc">${esc(p.descripcion)}</p>` : ""}
                     <ul class="chips">${p.caracteristicas.map((c) => `<li>${esc(c)}</li>`).join("")}</ul>
                     <div class="pieza__foot">
-                      <p class="pieza__precio"><small>Desde</small><strong>${esc(p.precio)}</strong><small>${esc(HO.moneda)} / noche</small></p>
+                      <p class="pieza__precio">${p.precio ? `<small>Desde</small><strong>${esc(p.precio)}</strong><small>${esc(HO.moneda)} / noche</small>` : `<strong>Consultar tarifa</strong>`}</p>
                       <button type="button" class="hbtn hbtn--sm" data-pieza="${esc(p.tipo)}">Reservar esta pieza</button>
                     </div>
                   </div>
@@ -186,6 +186,21 @@
     return l.join("\n");
   }
 
+  // Validaciones antes de abrir WhatsApp: fechas coherentes y capacidad de la pieza
+  function validar(pieza) {
+    if (inp.value && inp.value < hoy) return "La fecha de llegada no puede ser anterior a hoy.";
+    if (inp.value && out.value && out.value <= inp.value) return "La salida debe ser después de la llegada.";
+    const p = piezas.find((x) => x.tipo === (pieza || sel.value));
+    const total = estado.ad + estado.ni;
+    if (p && p.max && total > p.max)
+      return `La pieza ${p.tipo} admite hasta ${p.max} ${p.max === 1 ? "persona" : "personas"}. Elige otra pieza o escríbenos y combinamos piezas.`;
+    return "";
+  }
+  function mostrarError(msg) {
+    $("#hResumen").innerHTML = `<span class="reserva__error">${esc(msg)}</span>`;
+    $("#hReserva").scrollIntoView({ behavior: "smooth", block: "center" });
+  }
+
   function actualizar() {
     // La salida siempre después de la llegada
     if (inp.value) {
@@ -236,12 +251,16 @@
       (inp.value ? out : inp).focus();
       return;
     }
+    const err = validar();
+    if (err) return mostrarError(err);
     window.open(wa(mensaje()), "_blank", "noopener");
   });
 
   root.addEventListener("click", (e) => {
     const b = e.target.closest("[data-pieza]");
     if (!b) return;
+    const err = validar(b.dataset.pieza);
+    if (err) return mostrarError(err);
     sel.value = b.dataset.pieza;
     window.open(wa(mensaje(b.dataset.pieza)), "_blank", "noopener");
   });
