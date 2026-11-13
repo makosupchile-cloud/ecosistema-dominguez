@@ -102,8 +102,8 @@ window.SITE = {
     texto:
       "Colación diaria, platos de la casa y buena carta de tragos. Consulta el menú del día por WhatsApp.",
     imagen: U("photo-1414235077428-338989a2e8c0", 2000),
-    // Ruta del PDF de la carta real (ej: "/assets/carta.pdf"). Vacío = no se muestra el botón "Carta en PDF".
-    menuPdf: "",
+    // Ruta del PDF de la carta real (ej: "/assets/carta.pdf"). Vacío = no se muestra el botón "Carta en PDF". Hoy: carta de demostración.
+    menuPdf: "/assets/carta-demo.pdf",
     secciones: [
       {
         titulo: "Colación del día",
