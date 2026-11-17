@@ -178,3 +178,7 @@ button { font: inherit; }
 
 /* Nombre de quien responde en la tienda (estilo chat grupal) */
 .msg__who { display: block; margin-bottom: 2px; font-size: 12.5px; font-weight: 600; color: #b45309; }
+
+/* Botón que abre WhatsApp real con la cotización */
+.msg__wa { display: inline-block; margin-top: 8px; padding: 8px 14px; border-radius: 999px; background: #25d366; color: #073b1d; font-weight: 700; font-size: 13.5px; text-decoration: none; }
+.msg__wa:active { filter: brightness(.92); }

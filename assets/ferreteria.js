@@ -13,8 +13,9 @@
   const clp = (n) => "$" + Math.round(n).toLocaleString("es-CL");
   const norm = (s) => String(s).toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "");
   const fecha = (iso) => iso.split("-").reverse().join("-");
-  // Demo: los botones de WhatsApp abren la simulación (comparte la cotización).
-  const wa = () => "/demo-whatsapp";
+  // Los botones de WhatsApp abren WhatsApp real (número de config.js) con el mensaje ya escrito.
+  // Solo los enlaces "Ver cómo se vería en WhatsApp" abren la simulación (/demo-whatsapp).
+  const wa = (msg) => `https://wa.me/${F.whatsapp}?text=${encodeURIComponent(msg || F.mensaje)}`;
   const img = (src, alt, cls = "") =>
     `<img class="${cls}" src="${esc(src)}" alt="${esc(alt)}" loading="lazy" decoding="async" onerror="this.classList.add('is-broken')">`;
 
@@ -149,7 +150,7 @@
             <p class="visita__dir">${icoPin} ${esc(F.direccion)}</p>
             <p>${esc(F.texto)}</p>
             <div class="visita__acc">
-              <a class="tbtn" href="/demo-whatsapp" target="_blank" rel="noopener">Cotizar por WhatsApp</a>
+              <a class="tbtn" href="${wa(F.mensaje)}" target="_blank" rel="noopener">Cotizar por WhatsApp</a>
               <a class="tbtn tbtn--line" href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(F.direccion)}" target="_blank" rel="noopener">Cómo llegar</a>
             </div>
           </div>

@@ -23,8 +23,9 @@
       .replace(/\s+/g, " ")
       .trim();
   const fecha = (iso) => iso.split("-").reverse().join("-");
-  // Demo: todos los botones de WhatsApp abren la simulación con la cotización actual.
-  const wa = () => "/demo-whatsapp";
+  // Los botones de WhatsApp abren WhatsApp real (número de config.js) con el mensaje ya escrito.
+  // Solo los enlaces "Ver cómo se vería en WhatsApp" abren la simulación (/demo-whatsapp).
+  const wa = (msg) => `https://wa.me/${F.whatsapp}?text=${encodeURIComponent(msg || F.mensaje)}`;
 
   const productos = CAT.productos.map((p, i) => ({ ...p, id: i, texto: norm(p.nombre + " " + p.cat) }));
   const categorias = [...new Set(CAT.productos.map((p) => p.cat))];
