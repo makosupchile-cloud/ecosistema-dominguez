@@ -1,6 +1,7 @@
 /* Simulación tipo mensajería de la cotización de Ferretería La Italiana.
    Usa el mismo catálogo (assets/catalogo.js) y las mismas reglas que el asistente de /ferreteria,
-   pero NO se conecta a WhatsApp ni a ningún servicio: el cierre es simulado dentro de la página.
+   pero NO usa servidor: el cierre ("Enviar a la tienda") se simula en la página y, además, abre
+   WhatsApp real (número de config.js) con la cotización escrita para enviarla.
    No hay IA ni servidor; es lógica de búsqueda sobre el catálogo de prueba. */
 (function () {
   const CAT = window.CATALOGO;
@@ -316,13 +317,22 @@
     const resumen = lineasCot(false); // se arma antes de vaciar la cotización
     const u = unidades();
     const n = cot.size;
+    // Mensaje real para WhatsApp (se arma antes de vaciar la cotización)
+    const textoWa =
+      `Hola, quiero confirmar esta cotización en Ferretería ${F.nombre} (N° ${num}):\n\n` +
+      [...cot].map(([id, c]) => `• ${c} × ${productos[id].nombre} — ${clp(productos[id].precio * c)}`).join("\n") +
+      `\n\nTotal referencial: ${monto} (IVA incluido, precios de lista).`;
+    const urlWa = `https://wa.me/${F.whatsapp}?text=${encodeURIComponent(textoWa)}`;
     cot.clear();
     guardar();
     // 1) Confirmación del envío (sistema de la tienda)
     bot(
       `✅ Enviada. Tu cotización <strong>N° ${num}</strong> (${fmtUn(u)} en ${fmtProd(n)}) por <strong>${monto}</strong> ya está con el equipo de la tienda. ` +
-        `Un encargado la está revisando.`
+        `Un encargado la está revisando.` +
+        `<a class="msg__wa" href="${urlWa}" target="_blank" rel="noopener">📲 Enviar por WhatsApp real</a>` +
+        `<span class="msg__note">Se abrió tu WhatsApp con la cotización escrita: toca «Enviar» ahí. Si no se abrió, usa este botón.</span>`
     );
+    window.open(urlWa, "_blank", "noopener");
     // 2) Responde una persona de bodega: confirma stock y deja la cotización lista para retirar
     agente(
       `Hola, soy Marcelo de bodega. Recibí tu cotización <strong>N° ${num}</strong> y ya revisé el stock: tenemos todo disponible.` +
